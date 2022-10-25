@@ -11,7 +11,7 @@ from sqlalchemy.sql import text
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("udaconnect-api")
 
-
+# @TODO refacto as independent service
 class ConnectionService:
     @staticmethod
     def find_contacts(person_id: int, start_date: datetime, end_date: datetime, meters=5
@@ -23,6 +23,8 @@ class ConnectionService:
         large datasets. This is by design: what are some ways or techniques to help make this data integrate more
         smoothly for a better user experience for API consumers?
         """
+        # @TODO Refacto this block to LocationService / SingleResponsibilityOnly
+        # @TODO Create endpoint/func to retrieve this query data in LocationService
         locations: List = db.session.query(Location).filter(
             Location.person_id == person_id
         ).filter(Location.creation_time < end_date).filter(
@@ -30,6 +32,8 @@ class ConnectionService:
         ).all()
 
         # Cache all users in memory for quick lookup
+        # @TODO Make this communication with gRPC / gRPC Stub / gRPC Client
+        # @TODO create and generate the protos for a person
         person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
 
         # Prepare arguments for queries
@@ -80,7 +84,7 @@ class ConnectionService:
 
         return result
 
-
+# @TODO refacto as independent service
 class LocationService:
     @staticmethod
     def retrieve(location_id) -> Location:
@@ -107,10 +111,15 @@ class LocationService:
         new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
         db.session.add(new_location)
         db.session.commit()
-
+        # @TODO Create Kafka Location producer
+        # @TODO Write the new location to a KAFKA_TOPIC
         return new_location
 
 
+# @TODO Create Kafka Location consumer
+
+
+# @TODO refacto as independent service
 class PersonService:
     @staticmethod
     def create(person: Dict) -> Person:
@@ -132,3 +141,11 @@ class PersonService:
     @staticmethod
     def retrieve_all() -> List[Person]:
         return db.session.query(Person).all()
+
+
+    # @TODO add new func for the ConnectionService
+    # @TODO make communication with gRPC Server
+
+
+
+# @TODO provide a REST API documentation
