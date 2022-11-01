@@ -8,7 +8,10 @@ from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchem
 from geoalchemy2.functions import ST_AsText, ST_Point
 from sqlalchemy.sql import text
 
-logging.basicConfig(level=logging.WARNING)
+import sys
+
+logging.basicConfig(level=logging.WARNING, handlers=[
+    logging.StreamHandler(sys.stdout), logging.StreamHandler(sys.stderr)])
 logger = logging.getLogger("ConnectionService-api")
 
 # @TODO refacto as independent service
@@ -25,11 +28,13 @@ class ConnectionService:
         """
         # @TODO Refacto this block to LocationService / SingleResponsibilityOnly
         # @TODO Create endpoint/func to retrieve this query data in LocationService
-        locations: List = db.session.query(Location).filter(
-            Location.person_id == person_id
-        ).filter(Location.creation_time < end_date).filter(
-            Location.creation_time >= start_date
-        ).all()
+        # locations: List = db.session.query(Location).filter(
+        #     Location.person_id == person_id
+        # ).filter(Location.creation_time < end_date).filter(
+        #     Location.creation_time >= start_date
+        # ).all()
+
+        locations: List = LocationService.retrieve_person_datediff(location=Location, person_id=person_id, start_date=start_date, end_date=end_date)
 
         # Cache all users in memory for quick lookup
         # @TODO Make this communication with gRPC / gRPC Stub / gRPC Client
@@ -84,68 +89,79 @@ class ConnectionService:
 
         return result
 
-# # @TODO refacto as independent service
-# class LocationService:
-#     @staticmethod
-#     def retrieve(location_id) -> Location:
-#         location, coord_text = (
-#             db.session.query(Location, Location.coordinate.ST_AsText())
-#             .filter(Location.id == location_id)
-#             .one()
-#         )
-#
-#         # Rely on database to return text form of point to reduce overhead of conversion in app code
-#         location.wkt_shape = coord_text
-#         return location
-#
-#     @staticmethod
-#     def create(location: Dict) -> Location:
-#         validation_results: Dict = LocationSchema().validate(location)
-#         if validation_results:
-#             logger.warning(f"Unexpected data format in payload: {validation_results}")
-#             raise Exception(f"Invalid payload: {validation_results}")
-#
-#         new_location = Location()
-#         new_location.person_id = location["person_id"]
-#         new_location.creation_time = location["creation_time"]
-#         new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
-#         db.session.add(new_location)
-#         db.session.commit()
-#         # @TODO Create Kafka Location producer
-#         # @TODO Write the new location to a KAFKA_TOPIC
-#         return new_location
-#
-#
-# # @TODO Create Kafka Location consumer
-#
-#
-# # @TODO refacto as independent service
-# class PersonService:
-#     @staticmethod
-#     def create(person: Dict) -> Person:
-#         new_person = Person()
-#         new_person.first_name = person["first_name"]
-#         new_person.last_name = person["last_name"]
-#         new_person.company_name = person["company_name"]
-#
-#         db.session.add(new_person)
-#         db.session.commit()
-#
-#         return new_person
-#
-#     @staticmethod
-#     def retrieve(person_id: int) -> Person:
-#         person = db.session.query(Person).get(person_id)
-#         return person
-#
-#     @staticmethod
-#     def retrieve_all() -> List[Person]:
-#         return db.session.query(Person).all()
-#
-#
-#     # @TODO add new func for the ConnectionService
-#     # @TODO make communication with gRPC Server
-#
-#
-#
-# # @TODO provide a REST API documentation
+# @TODO refacto as independent service
+class LocationService:
+    @staticmethod
+    def retrieve(location_id) -> Location:
+        location, coord_text = (
+            db.session.query(Location, Location.coordinate.ST_AsText())
+            .filter(Location.id == location_id)
+            .one()
+        )
+
+        # Rely on database to return text form of point to reduce overhead of conversion in app code
+        location.wkt_shape = coord_text
+        return location
+
+    @staticmethod
+    def create(location: Dict) -> Location:
+        validation_results: Dict = LocationSchema().validate(location)
+        if validation_results:
+            logger.warning(f"Unexpected data format in payload: {validation_results}")
+            raise Exception(f"Invalid payload: {validation_results}")
+
+        new_location = Location()
+        new_location.person_id = location["person_id"]
+        new_location.creation_time = location["creation_time"]
+        new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
+        db.session.add(new_location)
+        db.session.commit()
+        # @TODO Create Kafka Location producer
+        # @TODO Write the new location to a KAFKA_TOPIC
+        return new_location
+    @staticmethod
+    def retrieve_person_datediff(location: List, person_id: int, start_date: datetime, end_date: datetime) -> Location:
+        locations: List = db.session.query(Location).filter(
+            Location.person_id == person_id
+        ).filter(Location.creation_time < end_date).filter(
+            Location.creation_time >= start_date
+        ).all()
+
+        return locations
+
+
+
+
+# @TODO Create Kafka Location consumer
+
+
+# @TODO refacto as independent service
+class PersonService:
+    @staticmethod
+    def create(person: Dict) -> Person:
+        new_person = Person()
+        new_person.first_name = person["first_name"]
+        new_person.last_name = person["last_name"]
+        new_person.company_name = person["company_name"]
+
+        db.session.add(new_person)
+        db.session.commit()
+
+        return new_person
+
+    @staticmethod
+    def retrieve(person_id: int) -> Person:
+        person = db.session.query(Person).get(person_id)
+        return person
+
+    @staticmethod
+    def retrieve_all() -> List[Person]:
+        return db.session.query(Person).all()
+
+
+    # @TODO add new func for the ConnectionService
+    # @TODO make communication with gRPC Server
+
+
+
+# @TODO provide a REST API documentation
