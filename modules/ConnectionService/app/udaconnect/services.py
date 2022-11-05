@@ -7,11 +7,12 @@ from app.udaconnect.models import Connection, Location, Person
 from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchema
 from geoalchemy2.functions import ST_AsText, ST_Point
 from sqlalchemy.sql import text
+import gRPC.person_event_pb2
+import gRPC.person_event_pb2_grpc
 
-import sys
 
-logging.basicConfig(level=logging.WARNING, handlers=[
-    logging.StreamHandler(sys.stdout), logging.StreamHandler(sys.stderr)])
+
+logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("ConnectionService-api")
 
 # @TODO refacto as independent service
@@ -40,6 +41,8 @@ class ConnectionService:
         # @TODO Make this communication with gRPC / gRPC Stub / gRPC Client
         # @TODO create and generate the protos for a person
         person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
+
+
 
         # Prepare arguments for queries
         data = []
