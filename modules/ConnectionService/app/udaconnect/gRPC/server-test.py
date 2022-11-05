@@ -43,7 +43,18 @@ class PersonServiceGrpc(person_event_pb2_grpc.PersonServiceGrpcServicer):
         # result = cursor.fetchall()
         # print(result)
 
+        # simulate db query with SQLAlchemy
+        PersonList = [db.session.query(Person).all()]
 
+        PersonListGRPC = []
+        for person in PersonList:
+         person = person_event_pb2.OrderMessage(
+              id = person.id,
+              first_name = person.first_name,
+              last_name = person.last_name,
+              company_name = person.company_name
+         )
+         PersonListGRPC.append(person)
 
 
 
