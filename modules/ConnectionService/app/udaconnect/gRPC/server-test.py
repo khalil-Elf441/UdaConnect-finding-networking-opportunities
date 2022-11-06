@@ -32,18 +32,6 @@ class PersonServiceGrpc(person_event_pb2_grpc.PersonServiceGrpcServicer):
 
     def retrieve_all(self, request, context):
         print("retrieve_all has been requeted")
-        print(request)
-
-        # simulate db query with psycopg2
-        # conn = psycopg2.connect(
-        #     database="geoconnections", user='ct_admin', password='password', host='127.0.0.1', port= '5432'
-        # )
-        # cursor = conn.cursor()
-        # cursor.execute('''SELECT * from person''')
-        # result = cursor.fetchall()
-        # print(result)
-
-        # simulate db query with SQLAlchemy
         PersonList = db.session.query(Person).all()
         PersonListGRPC = person_event_pb2.PersonMessageList()
         for person in PersonList:
@@ -59,10 +47,16 @@ class PersonServiceGrpc(person_event_pb2_grpc.PersonServiceGrpcServicer):
 
     def retrieve(self, request, context):
         print("retrieve has been requeted")
-        print(request)
+        person_id = request.value
+        person = db.session.query(Person).get(person_id)
+        rpc_person = person_event_pb2.PersonMessage(
+            id = int(person.id),
+            first_name = person.first_name,
+            last_name = person.last_name,
+            company_name = person.company_name
+        )
 
-        result = person_event_pb2.PersonMessage()
-        return result
+        return rpc_person
 
 
 class Person(db.Model):
