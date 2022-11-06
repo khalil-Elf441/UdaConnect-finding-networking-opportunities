@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List
+import json
 
 from app import db
 from app.udaconnect.models import Connection, Location, Person
@@ -36,17 +37,18 @@ class LocationService:
 
     @staticmethod
     def create(location: Dict) -> Location:
-        validation_results: Dict = LocationSchema().validate(location)
-        if validation_results:
-            logger.warning(f"Unexpected data format in payload: {validation_results}")
-            raise Exception(f"Invalid payload: {validation_results}")
+        # validation_results: Dict = LocationSchema().validate(location)
+        # if validation_results:
+        #     logger.warning(f"Unexpected data format in payload: {validation_results}")
+        #     raise Exception(f"Invalid payload: {validation_results}")
 
         new_location = {
             "person_id": location["person_id"],
-            "creation_time": location["creation_time"],
-            "coordinate": ST_Point(location["latitude"], location["longitude"])
+            "coordinate_latitude": location["latitude"],
+            "coordinate_longitude": location["longitude"]
             }
-        producer.send(TOPIC_NAME, new_location)
+        location_encode_data = json.dumps(new_location, indent=2).encode('utf-8')
+        producer.send(TOPIC_NAME, location_encode_data)
         producer.flush()
 
         return new_location

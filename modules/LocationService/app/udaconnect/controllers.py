@@ -7,7 +7,7 @@ from app.udaconnect.schemas import (
     PersonSchema,
 )
 # from app.udaconnect.services import ConnectionService, PersonService
-from app.udaconnect.services import LocationService, PersonService
+from app.udaconnect.services import LocationService
 from flask import request
 from flask_accepts import accepts, responds
 from flask_restx import Namespace, Resource
@@ -19,13 +19,14 @@ api = Namespace("UdaConnect", description="Connections via geolocation.")  # noq
 
 
 # TODO: This needs better exception handling
+# docker exec -it ae4a8f23545a /opt/bitnami/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic locations
 
 
 @api.route("/locations")
 @api.route("/locations/<location_id>")
 @api.param("location_id", "Unique ID for a given Location", _in="query")
 class LocationResource(Resource):
-    @accepts(schema=LocationSchema)
+    # @accepts(schema=LocationSchema)
     @responds(schema=LocationSchema)
     def post(self) -> Location:
         request.get_json()
