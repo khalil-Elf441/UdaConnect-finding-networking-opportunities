@@ -44,22 +44,18 @@ class PersonServiceGrpc(person_event_pb2_grpc.PersonServiceGrpcServicer):
         # print(result)
 
         # simulate db query with SQLAlchemy
-        PersonList = [db.session.query(Person).all()]
-
-        PersonListGRPC = []
+        PersonList = db.session.query(Person).all()
+        PersonListGRPC = person_event_pb2.PersonMessageList()
         for person in PersonList:
-         person = person_event_pb2.OrderMessage(
-              id = person.id,
-              first_name = person.first_name,
-              last_name = person.last_name,
-              company_name = person.company_name
-         )
-         PersonListGRPC.append(person)
+             rpc_person = person_event_pb2.PersonMessage(
+                  id = int(person.id),
+                  first_name = person.first_name,
+                  last_name = person.last_name,
+                  company_name = person.company_name
+             )
+             PersonListGRPC.persons.append(rpc_person)
 
-
-
-        result = person_event_pb2.PersonMessageList()
-        return result
+        return PersonListGRPC
 
     def retrieve(self, request, context):
         print("retrieve has been requeted")
