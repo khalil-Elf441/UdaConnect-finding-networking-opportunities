@@ -6,6 +6,8 @@ from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.functions import ST_AsText, ST_Point
 from kafka import KafkaConsumer
 
+from multiprocessing import Process
+
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -84,14 +86,6 @@ class Location(db.Model):
         coord_text = self.wkt_shape
         return coord_text[coord_text.find("(") + 1 : coord_text.find(" ")]
 
-
-
-
-@app.route("/health")
-def health():
-    return jsonify("healthy LocationProcessor")
-
-
 def insertLocation(location):
 
     new_location = Location()
@@ -103,14 +97,13 @@ def insertLocation(location):
     print("new location has been inserted")
 
 
-if __name__ == "__main__":
-#    app.run(port=5001, debug=True)
-    consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
-    
+consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
+
+def consumer_main():
     # check if the consumer would be listing the topics
     topics = consumer.topics()
-    
-    if not topics: 
+
+    if not topics:
         raise RuntimeError()
 
     for location in consumer:
@@ -118,6 +111,39 @@ if __name__ == "__main__":
         print('{}'.format(location_message))
         location_message = json.loads(location_message)
         insertLocation(location_message)
+        
+def run_app():
+    app.run(debug=False, port=5001)
+
+consumer_process = Process(target=consumer_main)
+run_app_process = Process(target=run_app)
+
+@app.route("/health")
+def health():
+    return jsonify("healthy LocationProcessor")
+
+@app.route("/start")
+def start():
+    if not consumer_process.is_alive():
+        consumer_process.start()
+        consumer_process.join()
+
+    return jsonify(f"start consumer on {consumer_process.pid}")
+
+# STOP the consumer remotly - UNF
+#@app.route("/stop")
+#def stop():
+#    if t_consumer.is_alive():
+#        consumer.close()
+#        t_consumer.stop()
+#    return jsonify("stop consumer")
+
+
+if __name__ == '__main__':
+    run_app_process.start()
+    run_app_process.join()
+
+
     
     
 
