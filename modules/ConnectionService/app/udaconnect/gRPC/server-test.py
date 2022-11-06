@@ -33,6 +33,7 @@ class PersonServiceGrpc(person_event_pb2_grpc.PersonServiceGrpcServicer):
     def retrieve_all(self, request, context):
         print("retrieve_all has been requeted")
         PersonList = db.session.query(Person).all()
+        db.session.commit()
         PersonListGRPC = person_event_pb2.PersonMessageList()
         for person in PersonList:
              rpc_person = person_event_pb2.PersonMessage(
@@ -49,6 +50,7 @@ class PersonServiceGrpc(person_event_pb2_grpc.PersonServiceGrpcServicer):
         print("retrieve has been requeted")
         person_id = request.value
         person = db.session.query(Person).get(person_id)
+        db.session.commit()
         rpc_person = person_event_pb2.PersonMessage(
             id = int(person.id),
             first_name = person.first_name,
