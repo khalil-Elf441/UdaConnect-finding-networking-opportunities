@@ -11,7 +11,7 @@ from sqlalchemy.sql import text
 from kafka import KafkaProducer
 
 TOPIC_NAME = 'locations'
-KAFKA_SERVER = 'localhost:9092'
+KAFKA_SERVER = '127.0.0.1:9092'
 
 
 producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
@@ -50,4 +50,14 @@ class LocationService:
         producer.flush()
 
         return new_location
+
+    @staticmethod
+    def retrieve_person_datediff(person_id: int, start_date: datetime, end_date: datetime) -> Location:
+        locations: List = db.session.query(Location).filter(
+            Location.person_id == person_id
+        ).filter(Location.creation_time < end_date).filter(
+            Location.creation_time >= start_date
+        ).all()
+
+        return locations
 
