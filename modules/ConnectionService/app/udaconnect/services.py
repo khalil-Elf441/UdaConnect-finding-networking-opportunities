@@ -34,7 +34,7 @@ class ConnectionService:
         # ).filter(Location.creation_time < end_date).filter(
         #     Location.creation_time >= start_date
         # ).all()
-
+        # @TODO make this query as HTTP call to location service
         locations: List = LocationService.retrieve_person_datediff(location=Location, person_id=person_id, start_date=start_date, end_date=end_date)
 
         # Cache all users in memory for quick lookup

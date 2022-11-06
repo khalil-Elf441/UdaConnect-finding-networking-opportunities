@@ -1,12 +1,17 @@
 import logging
-from datetime import datetime, timedelta
-from typing import Dict, List
 
-from app import db
-from app.udaconnect.models import Connection, Location, Person
-from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchema
-from geoalchemy2.functions import ST_AsText, ST_Point
-from sqlalchemy.sql import text
+DB_USERNAME = "ct_admin"
+DB_PASSWORD = "password"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "geoconnections"
+
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
 
 from kafka import KafkaConsumer
 
@@ -17,23 +22,11 @@ KAFKA_SERVER = 'localhost:9092'
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("LocationProcessor-api")
 
-class LocationProcessor:
-    def __init__(self):
-        threading.Thread.__init__(self)
-        self.stop_event = threading.Event()
+consumer = KafkaConsumer(TOPIC_NAME)
 
-    def stop(self):
-        self.stop_event.set()
-
-    def run(self):
-        consumer = KafkaConsumer(TOPIC_NAME)
-
-        while not self.stop_event.is_set():
-            for location in consumer:
-                db.session.add(location)
-                db.session.commit()
-                if self.stop_event.is_set():
-                    break
-
-        consumer.close()
-
+if __name__ == "__main__":
+    while True:
+        for location in consumer:
+            db.session.add(location)
+            db.session.commit()
+    time.sleep(86400)
