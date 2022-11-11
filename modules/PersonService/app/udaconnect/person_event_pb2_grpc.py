@@ -2,10 +2,7 @@
 """Client and server classes corresponding to protobuf-defined services."""
 import grpc
 
-
-import person_event_pb2 as person__event__pb2
-
-# from app.udaconnect import person_event_pb2 as person__event__pb2
+from app.udaconnect import person_event_pb2 as person__event__pb2
 
 
 class PersonServiceGrpcStub(object):

@@ -7,6 +7,9 @@ from app.udaconnect.schemas import (
     PersonSchema,
 )
 
+
+from app.udaconnect.server_utils import run_grpc_server
+
 # from app.udaconnect.services import ConnectionService, LocationService, PersonService
 
 from app.udaconnect.services import PersonService
@@ -63,6 +66,7 @@ class PersonResource(Resource):
     def get(self, person_id) -> Person:
         person: Person = PersonService.retrieve(person_id)
         return person
+
 
 
 @api.route("/persons/<person_id>/connection")
