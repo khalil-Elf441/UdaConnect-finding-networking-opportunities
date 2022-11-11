@@ -1,6 +1,12 @@
 import grpc
-import person_event_pb2
-import person_event_pb2_grpc
+
+# import person_event_pb2
+# import person_event_pb2_grpc
+
+from app.udaconnect import person_event_pb2
+from app.udaconnect import person_event_pb2_grpc
+
+
 import asyncio
 
 import psycopg2
