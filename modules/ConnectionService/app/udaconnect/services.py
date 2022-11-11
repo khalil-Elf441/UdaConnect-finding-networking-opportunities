@@ -34,8 +34,8 @@ class ConnectionService:
         # ).filter(Location.creation_time < end_date).filter(
         #     Location.creation_time >= start_date
         # ).all()
-
-        locations: List = LocationService.retrieve_person_datediff(location=Location, person_id=person_id, start_date=start_date, end_date=end_date)
+        # @TODO make this query as HTTP call to location service
+        locations: List = LocationService.retrieve_person_datediff(person_id=person_id, start_date=start_date, end_date=end_date)
 
         # Cache all users in memory for quick lookup
         # @TODO Make this communication with gRPC / gRPC Stub / gRPC Client
@@ -123,7 +123,7 @@ class LocationService:
         # @TODO Write the new location to a KAFKA_TOPIC
         return new_location
     @staticmethod
-    def retrieve_person_datediff(location: List, person_id: int, start_date: datetime, end_date: datetime) -> Location:
+    def retrieve_person_datediff(person_id: int, start_date: datetime, end_date: datetime) -> List[Location]:
         locations: List = db.session.query(Location).filter(
             Location.person_id == person_id
         ).filter(Location.creation_time < end_date).filter(
