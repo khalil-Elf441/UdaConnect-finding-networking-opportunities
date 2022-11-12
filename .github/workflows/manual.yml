@@ -19,21 +19,20 @@ jobs:
     environment: uda_env
     env:
       DOCKERHUB_REPOSITORY: khalilelf441
-      APP_NAME: udaconnect
     strategy:
       fail-fast: false
       matrix:
         include:
           - dockerfile: ./modules/ConnectionService/Dockerfile
-            image: ${{ format('{0}.{1}', ${{ env.DOCKERHUB_REPOSITORY }} , "connectionservice") }}
+            image: udaconnect-connectionservice
           - dockerfile: ./modules/frontend/Dockerfile
-            image: ${{ env.APP_NAME }}-frontend
+            image: udaconnect-frontend
           - dockerfile: ./modules/LocationProcessor/Dockerfile
-            image: ${{ env.APP_NAME }}-locationprocessor
+            image: udaconnect-locationprocessor
           - dockerfile: ./modules/LocationService/Dockerfile
-            image: ${{ env.APP_NAME }}-locationservice
+            image: udaconnect-locationservice
           - dockerfile: ./modules/PersonService/Dockerfile
-            image: ${{ env.APP_NAME }}-personservice
+            image: udaconnect-personservice
     permissions:
       contents: read
       packages: write
