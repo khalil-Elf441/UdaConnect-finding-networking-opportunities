@@ -2,7 +2,7 @@ FROM python:3.7-alpine
 
 WORKDIR .
 
-RUN apk add --no-cache gcc g++ python3 python3-dev py3-pip
+RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev
 
 COPY ./modules/LocationProcessor .
 
