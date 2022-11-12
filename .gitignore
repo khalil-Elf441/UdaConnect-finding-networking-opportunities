@@ -8,7 +8,7 @@ dist/
 .vscode/
 udaconnect-env/
 docs/
-
+old_ConnectionService/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

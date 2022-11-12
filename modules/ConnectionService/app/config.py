@@ -15,7 +15,6 @@ DB_PORT = "5432"
 DB_NAME = "geoconnections"
 
 
-
 class BaseConfig:
     CONFIG_NAME = "base"
     USE_MOCK_EQUIVALENCY = False

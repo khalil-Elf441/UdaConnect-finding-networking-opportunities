@@ -1,8 +1,9 @@
 from concurrent import futures
 
 import grpc
-import person_event_pb2
-import person_event_pb2_grpc
+
+from app.udaconnect import person_event_pb2
+from app.udaconnect import person_event_pb2_grpc
 
 import psycopg2
 from flask import Flask, render_template, request
@@ -72,11 +73,11 @@ class Person(db.Model):
 
 
 # Initialize gRPC server
-server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
-person_event_pb2_grpc.add_PersonServiceGrpcServicer_to_server(PersonServiceGrpc(), server)
+def run_grpc_server():
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=2))
+    person_event_pb2_grpc.add_PersonServiceGrpcServicer_to_server(PersonServiceGrpc(), server)
 
-
-print("Server starting on port 5005...")
-server.add_insecure_port("[::]:5005")
-server.start()
-server.wait_for_termination()
+    print("Server starting on port 5005...")
+    server.add_insecure_port("[::]:5005")
+    server.start()
+    server.wait_for_termination()

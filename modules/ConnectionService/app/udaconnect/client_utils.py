@@ -1,6 +1,12 @@
 import grpc
-import person_event_pb2
-import person_event_pb2_grpc
+
+# import person_event_pb2
+# import person_event_pb2_grpc
+
+from app.udaconnect import person_event_pb2
+from app.udaconnect import person_event_pb2_grpc
+
+
 import asyncio
 
 import psycopg2
@@ -72,17 +78,19 @@ def rpc_to_model(rpc_Person) -> Person:
     new_person.company_name = rpc_Person.company_name
     return new_person
 
-try:
-    print("Person list")
-    print(grpc_client_retrieve_all())
 
-    print("Person by id")
-    person = grpc_client_retrieve(1)
-    print(person.first_name)
-
-except Exception as e:
-    print(e)
-
+# gRPC testing
+# try:
+#     print("Person list")
+#     print(grpc_client_retrieve_all())
+#
+#     print("Person by id")
+#     person = grpc_client_retrieve(1)
+#     print(person.first_name)
+#
+# except Exception as e:
+#     print(e)
+#
 
 
 

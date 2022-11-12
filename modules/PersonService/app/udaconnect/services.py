@@ -8,6 +8,8 @@ from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchem
 from geoalchemy2.functions import ST_AsText, ST_Point
 from sqlalchemy.sql import text
 
+from app.udaconnect.server_utils import PersonServiceGrpc
+
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("PersonService-api")
 #
@@ -135,11 +137,13 @@ class PersonService:
 
     @staticmethod
     def retrieve(person_id: int) -> Person:
+        # person = PersonServiceGrpc.retrieve(person_id)
         person = db.session.query(Person).get(person_id)
         return person
 
     @staticmethod
     def retrieve_all() -> List[Person]:
+        # person = PersonServiceGrpc.retrieve(person_id)
         return db.session.query(Person).all()
 
 
