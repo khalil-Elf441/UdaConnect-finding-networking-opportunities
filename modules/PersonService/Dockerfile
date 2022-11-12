@@ -8,7 +8,7 @@ COPY ./modules/PersonService .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 5005, 5001
+EXPOSE 5005 5001
 
 
 CMD ["flask", "run", "--host", "0.0.0.0", "--port", "5001"]
