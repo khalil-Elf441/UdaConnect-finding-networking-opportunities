@@ -12,6 +12,11 @@ RUN apt-get install -y python3-pip
 
 COPY ./modules/LocationProcessor .
 
+
+CMD ["pip3","--version"]
+
+CMD ["pip","--version"]
+
 RUN pip install -r requirements.txt
 
 EXPOSE 5000
