@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List
-
+import os
 
 import requests
 import json
@@ -20,8 +20,12 @@ logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("PersonService-api")
 
 
-LOCATION_ENDPOINT_PORT = 5002
-LOCATION_ENDPOINT = "http://localhost:{PORT}/api/locations/{person_id}/daterange"
+# LOCATION_ENDPOINT_PORT = 5002
+# LOCATION_ENDPOINT = "http://localhost:{PORT}/api/locations/{person_id}/daterange"
+
+TOPIC_NAME = os.environ["LOCATION_ENDPOINT_PORT"]
+KAFKA_SERVER = os.environ["LOCATION_ENDPOINT"]
+
 
 # @TODO refacto as independent service
 class ConnectionService:
