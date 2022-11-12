@@ -25,7 +25,7 @@ jobs:
       matrix:
         include:
           - dockerfile: ./modules/ConnectionService/Dockerfile
-            image: ${{ env.APP_NAME }}-connectionservice
+            image: ${{ format('{0}.{1}', env.APP_NAME, "connectionservice") }}
           - dockerfile: ./modules/frontend/Dockerfile
             image: ${{ env.APP_NAME }}-frontend
           - dockerfile: ./modules/LocationProcessor/Dockerfile
