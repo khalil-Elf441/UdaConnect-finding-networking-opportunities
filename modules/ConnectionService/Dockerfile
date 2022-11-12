@@ -8,6 +8,6 @@ COPY ./modules/ConnectionService .
 
 RUN pip install -r requirements.txt
 
-EXPOSE 5000
+EXPOSE 5003
 
 CMD ["flask", "run", "--host", "0.0.0.0"]
