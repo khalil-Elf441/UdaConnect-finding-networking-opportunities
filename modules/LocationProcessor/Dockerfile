@@ -2,10 +2,11 @@ FROM python:3.8
 
 WORKDIR .
 
-COPY . .
+COPY ./modules/LocationProcessor .
+
 RUN pip install -r requirements.txt
 
 EXPOSE 5000
 
-COPY . .
+
 ENTRYPOINT ["python", "run_location_processor.py"]

@@ -17,6 +17,8 @@ jobs:
   build-and-push-image:
     runs-on: ubuntu-latest
     environment: uda_env
+    env:
+      DOCKERHUB_REPOSITORY: khalilelf441
     strategy:
       fail-fast: false
       matrix:
@@ -28,9 +30,9 @@ jobs:
           - dockerfile: ./modules/LocationProcessor/Dockerfile
             image: uda-locationprocessor
           - dockerfile: ./modules/LocationService/Dockerfile
-            image: ghcr.io/khalilelf441/Uda-LocationService
+            image: uda-locationservice
           - dockerfile: ./modules/PersonService/Dockerfile
-            image: ghcr.io/khalilelf441/Uda-PersonService
+            image: uda-personservice
     permissions:
       contents: read
       packages: write
@@ -59,4 +61,4 @@ jobs:
           file: ${{ matrix.dockerfile }}
           platforms: linux/amd64
           push: true
-          tags: khalilelf441/${{ matrix.image }}:latest
+          tags: ${{ env.DOCKERHUB_REPOSITORY }}/${{ matrix.image }}:latest, ${{ env.DOCKERHUB_REPOSITORY }}/${{ matrix.image }}:${{ format('v1.0.{0}', github.run_number) }}

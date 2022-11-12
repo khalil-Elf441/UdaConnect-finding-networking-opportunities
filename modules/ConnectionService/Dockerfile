@@ -6,8 +6,6 @@ RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev
 
 COPY ./modules/ConnectionService .
 
-RUN echo $(pwd) && ls
-
 RUN pip install -r requirements.txt
 
 EXPOSE 5000
