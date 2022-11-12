@@ -21,14 +21,14 @@ def create_app(env=None):
     register_routes(api, app)
     db.init_app(app)
 
-    grpc_server_process = Process(target=run_grpc_server)
+    grpc_server_process = Process(name="gRPC_Server", target=run_grpc_server)
 
-    @app.route("/grpcstart")
+    @app.route("/grpcstart", methods = ['POST'])
     def grpc_server():
 
         grpc_server_process.start()
-        grpc_server_process.join()
-        return jsonify(f"start consumer on {grpc_server_process.pid}")
+        # grpc_server_process.join()
+        return jsonify(f"Run {grpc_server_process.name} on {grpc_server_process.pid}")
 
 
     @app.route("/health")

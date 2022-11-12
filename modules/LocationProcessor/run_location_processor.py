@@ -115,7 +115,7 @@ def consumer_main():
 def run_app():
     app.run(debug=False, port=5001)
 
-consumer_process = Process(target=consumer_main)
+consumer_process = Process(name="consumer_process", target=consumer_main)
 run_app_process = Process(target=run_app)
 
 @app.route("/health")
@@ -128,7 +128,7 @@ def start():
         consumer_process.start()
         consumer_process.join()
 
-    return jsonify(f"start consumer on {consumer_process.pid}")
+    return jsonify(f"Run {consumer_process.name} on {consumer_process.pid}")
 
 # STOP the consumer remotly - UNF
 #@app.route("/stop")

@@ -2,6 +2,12 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List
 
+
+import requests
+import json
+
+
+
 from app import db
 from app.udaconnect.models import Connection, Location, Person
 from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchema
@@ -12,6 +18,10 @@ from app.udaconnect.client_utils import grpc_client_retrieve_all
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("PersonService-api")
+
+
+LOCATION_ENDPOINT_PORT = 5002
+LOCATION_ENDPOINT = "http://localhost:{PORT}/api/locations/{person_id}/daterange"
 
 # @TODO refacto as independent service
 class ConnectionService:
@@ -27,11 +37,17 @@ class ConnectionService:
         """
         # @TODO Refacto this block to LocationService / SingleResponsibilityOnly
         # @TODO Create endpoint/func to retrieve this query data in LocationService
-        locations: List = db.session.query(Location).filter(
-            Location.person_id == person_id
-        ).filter(Location.creation_time < end_date).filter(
-            Location.creation_time >= start_date
-        ).all()
+        # locations: List = db.session.query(Location).filter(
+        #     Location.person_id == person_id
+        # ).filter(Location.creation_time < end_date).filter(
+        #     Location.creation_time >= start_date
+        # ).all()
+
+
+
+        PARAMS = {'start_date': start_date, 'end_date': end_date}
+
+        locations: List = requests.get(url=LOCATION_ENDPOINT.format(PORT=LOCATION_ENDPOINT_PORT, person_id=person_id), params=PARAMS).json()
 
         # Cache all users in memory for quick lookup
         # @TODO Make this communication with gRPC / gRPC Stub / gRPC Client
@@ -44,8 +60,8 @@ class ConnectionService:
             data.append(
                 {
                     "person_id": person_id,
-                    "longitude": location.longitude,
-                    "latitude": location.latitude,
+                    "longitude": location["longitude"],
+                    "latitude": location["latitude"],
                     "meters": meters,
                     "start_date": start_date.strftime("%Y-%m-%d"),
                     "end_date": (end_date + timedelta(days=1)).strftime("%Y-%m-%d"),
