@@ -1,14 +1,14 @@
-FROM python:3.7-slim
+FROM ubuntu:18.04
 
 WORKDIR .
 
-RUN pip install pipenv
 RUN apt-get update
-RUN apt-get install -y --no-install-recommends gcc python3-dev libssl-dev
-RUN pipenv install --deploy --system
-RUN apt-get remove -y gcc python3-dev libssl-dev
-RUN apt-get autoremove -y
-RUN pip uninstall pipenv -y
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update
+RUN apt-get install -y python3.6
+RUN In -s /usr/bin/python3 /usr/bin/python
+RUN apt-get install -y python3-pip
 
 COPY ./modules/LocationProcessor .
 
