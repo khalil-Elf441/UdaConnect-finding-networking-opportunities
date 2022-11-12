@@ -9,6 +9,8 @@ dist/
 udaconnect-env/
 docs/
 old_ConnectionService/
+api/
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
