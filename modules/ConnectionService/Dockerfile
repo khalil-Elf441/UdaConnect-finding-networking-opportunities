@@ -4,7 +4,7 @@ WORKDIR .
 
 RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev
 
-RUN echo $(pwd)
+RUN echo $(pwd) && ls
 
 COPY . .
 RUN pip install -r requirements.txt
