@@ -32,6 +32,5 @@ Shapely==1.7.0
 six==1.15.0
 SQLAlchemy==1.3.19
 tomli==2.0.1
-udaconnect==0.0.0
 urllib3==1.26.12
 Werkzeug==0.16.1
