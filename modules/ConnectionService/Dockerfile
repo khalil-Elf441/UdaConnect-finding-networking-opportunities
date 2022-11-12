@@ -6,7 +6,7 @@ WORKDIR .
 
 RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev
 
-COPY . .
+COPY ./modules/ConnectionService .
 
 RUN echo $(pwd) && ls
 
