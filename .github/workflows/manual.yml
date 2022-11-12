@@ -22,7 +22,7 @@ jobs:
       matrix:
         include:
           - dockerfile: ./modules/ConnectionService/Dockerfile
-            image: ghcr.io/khalilelf441/Uda-ConnectionService
+            image: Uda-ConnectionService
           - dockerfile: ./modules/frontend/Dockerfile
             image: ghcr.io/khalilelf441/Uda-frontend
           - dockerfile: ./modules/LocationProcessor/Dockerfile
@@ -57,6 +57,6 @@ jobs:
         with:
           context: .
           file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: khalilelf441/${{ matrix.image }}:latest
