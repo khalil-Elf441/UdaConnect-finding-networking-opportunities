@@ -1,4 +1,6 @@
 import logging
+import os
+
 
 import json
 from flask import Flask, render_template, request, jsonify
@@ -19,15 +21,15 @@ from sqlalchemy.dialects.postgresql import JSONB, UUID
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-DB_USERNAME = "ct_admin"
-DB_PASSWORD = "password"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "geoconnections"
 
+DB_USERNAME = os.environ["DB_USERNAME"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
+DB_HOST = os.environ["DB_HOST"]
+DB_PORT = os.environ["DB_PORT"]
+DB_NAME = os.environ["DB_NAME"]
 
-TOPIC_NAME = 'locations'
-KAFKA_SERVER = '127.0.0.1:9092'
+TOPIC_NAME = os.environ["TOPIC_NAME"]
+KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
 
 app = Flask(__name__)
