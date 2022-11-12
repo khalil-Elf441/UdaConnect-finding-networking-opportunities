@@ -10,12 +10,11 @@ RUN apt-get install -y python3.6
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN apt-get install -y python3-pip
 
+RUN pip3 --version
+
+RUN pip --version
+
 COPY ./modules/LocationProcessor .
-
-
-CMD ["pip3","--version"]
-
-CMD ["pip","--version"]
 
 RUN pip install -r requirements.txt
 
