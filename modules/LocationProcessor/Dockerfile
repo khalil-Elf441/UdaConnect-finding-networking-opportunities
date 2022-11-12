@@ -1,8 +1,8 @@
-FROM python:3.8-alpine
+FROM python:3.7-alpine
 
 WORKDIR .
 
-RUN apk add --no-cache gcc g++ python3-dev python3 py3-pip
+RUN apk add --no-cache gcc g++ python3 python3-dev py3-pip
 
 COPY ./modules/LocationProcessor .
 
