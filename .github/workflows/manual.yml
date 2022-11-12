@@ -22,7 +22,7 @@ jobs:
       matrix:
         include:
           - dockerfile: ./modules/ConnectionService/Dockerfile
-            image: Uda-ConnectionService
+            image: uda-connectionService
           - dockerfile: ./modules/frontend/Dockerfile
             image: ghcr.io/khalilelf441/Uda-frontend
           - dockerfile: ./modules/LocationProcessor/Dockerfile
