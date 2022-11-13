@@ -119,7 +119,7 @@ def consumer_main():
         insertLocation(location_message)
         
 def run_app():
-    app.run(debug=False, port=5000)
+    app.run(host='0.0.0.0', debug=False, port=5000)
 
 consumer_process = Process(name="consumer_process", target=consumer_main)
 run_app_process = Process(target=run_app)
