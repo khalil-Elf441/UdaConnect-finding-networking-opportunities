@@ -7,6 +7,7 @@ from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.functions import ST_AsText, ST_Point
 from kafka import KafkaConsumer
+from flask_cors import CORS
 
 from multiprocessing import Process
 
@@ -32,6 +33,8 @@ KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
 
 app = Flask(__name__)
+
+CORS(app)  # Set CORS for development
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -98,9 +101,10 @@ def insertLocation(location):
     print("new location has been inserted")
 
 
-consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
+
 
 def consumer_main():
+    consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
     # check if the consumer would be listing the topics
     topics = consumer.topics()
 

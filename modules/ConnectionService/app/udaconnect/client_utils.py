@@ -22,6 +22,8 @@ DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_HOST = os.environ["DB_HOST"]
 DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
+GRPC_SERVER=os.environ["GRPC_SERVER"]
+
 
 # DB_USERNAME = "ct_admin"
 # DB_PASSWORD = "password"
@@ -45,9 +47,11 @@ Sample implementation of a writer that can be used to write messages to gRPC.
 """
 
 
+
+
 print("Sending sample payload...")
 
-channel = grpc.insecure_channel("localhost:5005")
+channel = grpc.insecure_channel(GRPC_SERVER)
 stub = person_event_pb2_grpc.PersonServiceGrpcStub(channel)
 
 
