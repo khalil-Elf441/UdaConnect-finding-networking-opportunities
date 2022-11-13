@@ -4,8 +4,10 @@ name: Udaconnect - Package Services with Docker
 # events but only for the master branch
 on:
   push:
-    branches: [ feature/dockerize-m-services ]
-
+    branches:
+      - feature/dockerize-m-services
+      - develop
+      - master
 #  ./modules/ConnectionService/Dockerfile
 #  ./modules/frontend/Dockerfile
 #  ./modules/LocationProcessor/Dockerfile

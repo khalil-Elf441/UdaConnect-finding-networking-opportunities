@@ -123,7 +123,7 @@ run_app_process = Process(target=run_app)
 def health():
     return jsonify("healthy LocationProcessor")
 
-@app.route("/start")
+@app.route("/start", methods = ['POST'])
 def start():
     if not consumer_process.is_alive():
         consumer_process.start()
