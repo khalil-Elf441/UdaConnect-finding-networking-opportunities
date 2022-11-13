@@ -50,7 +50,7 @@ class LocationService:
         # creation_time : SELECT FORMAT(GetDate(),'yyyy-mm-dd')
         global producer
         if producer is None:
-            KafkaProducer(bootstrap_servers=KAFKA_SERVER)
+            producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
             
         new_location = {
             "person_id": location["person_id"],
