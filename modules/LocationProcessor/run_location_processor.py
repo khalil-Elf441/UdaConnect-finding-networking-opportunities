@@ -170,7 +170,7 @@ def start():
 def status():
     app.logger.info('request status consumer')
     global consumer_process
-    if consumer_process is not None and isinstance(consumer_process, Process):
+    if consumer_process is not None and isinstance(consumer_process, multiprocessing.Process):
         try:
             if not consumer_process.is_alive():
                 return jsonify(f"consumer is alive on {consumer_process.pid}"), 200
