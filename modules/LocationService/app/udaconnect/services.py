@@ -21,7 +21,7 @@ KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
 DATE_FORMAT = "%Y-%m-%d"
 
-producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
+producer = None
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("LocationService-api")
@@ -48,8 +48,10 @@ class LocationService:
         #     logger.warning(f"Unexpected data format in payload: {validation_results}")
         #     raise Exception(f"Invalid payload: {validation_results}")
         # creation_time : SELECT FORMAT(GetDate(),'yyyy-mm-dd')
-        
-
+        global producer
+        if producer is None:
+            KafkaProducer(bootstrap_servers=KAFKA_SERVER)
+            
         new_location = {
             "person_id": location["person_id"],
             "latitude": location["latitude"],
