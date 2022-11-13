@@ -1,36 +1,40 @@
 import logging
+import os
+
 
 import json
 from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from geoalchemy2.functions import ST_AsText, ST_Point
 from kafka import KafkaConsumer
+from flask_cors import CORS
 
 from multiprocessing import Process
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from shapely.geometry.point import Point
-from sqlalchemy import BigInteger, Column, Date, DateTime, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
+
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
-DB_USERNAME = "ct_admin"
-DB_PASSWORD = "password"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "geoconnections"
 
+DB_USERNAME = os.environ["DB_USERNAME"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
+DB_HOST = os.environ["DB_HOST"]
+DB_PORT = os.environ["DB_PORT"]
+DB_NAME = os.environ["DB_NAME"]
 
-TOPIC_NAME = 'locations'
-KAFKA_SERVER = '127.0.0.1:9092'
+TOPIC_NAME = os.environ["TOPIC_NAME"]
+KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
 
 app = Flask(__name__)
+
+CORS(app)  # Set CORS for development
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -99,7 +103,9 @@ def insertLocation(location):
 
 consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
 
+
 def consumer_main():
+    app.logger.info('Run consumer process')
     # check if the consumer would be listing the topics
     topics = consumer.topics()
 
@@ -113,23 +119,32 @@ def consumer_main():
         insertLocation(location_message)
         
 def run_app():
-    app.run(debug=False, port=5001)
+    app.run(host='0.0.0.0', debug=False, port=5000)
 
 consumer_process = Process(name="consumer_process", target=consumer_main)
 run_app_process = Process(target=run_app)
 
-@app.route("/health")
+@app.route("/health", methods = ['GET'])
 def health():
     return jsonify("healthy LocationProcessor")
 
-@app.route("/start")
+@app.route("/start", methods = ['POST'])
 def start():
+    app.logger.info('request start consumer')
     if not consumer_process.is_alive():
         consumer_process.start()
         consumer_process.join()
 
     return jsonify(f"Run {consumer_process.name} on {consumer_process.pid}")
 
+
+@app.route("/consumerstatus", methods = ['GET'])
+def consumerstatus():
+    if not consumer_process.is_alive():
+        return jsonify(f"{consumer_process.name} is alive on {consumer_process.pid}")
+    return jsonify(f"{consumer_process.name} is shutdown")
+    
+    
 # STOP the consumer remotly - UNF
 #@app.route("/stop")
 #def stop():

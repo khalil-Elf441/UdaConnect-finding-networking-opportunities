@@ -1,46 +1,66 @@
-# Workflow to ensure whenever a Github PR is submitted, 
-# a JIRA ticket gets created automatically. 
-name: Manual Workflow
+name: Udaconnect - Package Services with Docker
 
-# Controls when the action will run. 
+# Controls when the action will run. Triggers the workflow on push
+# events but only for the master branch
 on:
-  # Triggers the workflow on pull request events but only for the master branch
-  pull_request_target:
-    types: [assigned, opened, reopened]
+  push:
+    branches:
+      - feature/dockerize-m-services
+      - develop
+      - master
+#  ./modules/ConnectionService/Dockerfile
+#  ./modules/frontend/Dockerfile
+#  ./modules/LocationProcessor/Dockerfile
+#  ./modules/LocationService/Dockerfile
+#  ./modules/PersonService/Dockerfile
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
 
 jobs:
-  test-transition-issue:
-    name: Convert Github Issue to Jira Issue
+  build-and-push-image:
     runs-on: ubuntu-latest
+    environment: uda_env
+    env:
+      DOCKERHUB_REPOSITORY: khalilelf441
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - dockerfile: ./modules/ConnectionService/Dockerfile
+            image: udaconnect-connectionservice
+          - dockerfile: ./modules/frontend/Dockerfile
+            image: udaconnect-frontend
+          - dockerfile: ./modules/LocationProcessor/Dockerfile
+            image: udaconnect-locationprocessor
+          - dockerfile: ./modules/LocationService/Dockerfile
+            image: udaconnect-locationservice
+          - dockerfile: ./modules/PersonService/Dockerfile
+            image: udaconnect-personservice
+    permissions:
+      contents: read
+      packages: write
+
     steps:
-    - name: Checkout
-      uses: actions/checkout@master
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-    - name: Login
-      uses: atlassian/gajira-login@master
-      env:
-        JIRA_BASE_URL: ${{ secrets.JIRA_BASE_URL }}
-        JIRA_USER_EMAIL: ${{ secrets.JIRA_USER_EMAIL }}
-        JIRA_API_TOKEN: ${{ secrets.JIRA_API_TOKEN }}
-        
-    - name: Create NEW JIRA ticket
-      id: create
-      uses: atlassian/gajira-create@master
-      with:
-        project: CONUPDATE
-        issuetype: Task
-        summary: |
-          Github PR - nd064	Cloud Native Architect Message Passing C2 | Repo: ${{ github.repository }}  | PR# ${{github.event.number}}
-        description: |
-           Repo link: https://github.com/${{ github.repository }}   
-           PR no. ${{ github.event.pull_request.number }} 
-           PR title: ${{ github.event.pull_request.title }}  
-           PR description: ${{ github.event.pull_request.description }}  
-           In addition, please resolve other issues, if any. 
-        fields: '{"components": [{"name":"nd064 - Cloud Native Architecture: Microservices at Scale"}], "customfield_16449":"https://classroom.udacity.com/nanodegrees/nd101/dashboard/overview", "customfield_16450":"Resolve the PR", "labels": ["github"], "priority":{"id": "4"}}'
+      - name: Login to DockerHub
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-    - name: Log created issue
-      run: echo "Issue ${{ steps.create.outputs.issue }} was created"
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+        with:
+          images: ${{ matrix.image }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64
+          push: true
+          tags: ${{ env.DOCKERHUB_REPOSITORY }}/${{ matrix.image }}:latest, ${{ env.DOCKERHUB_REPOSITORY }}/${{ matrix.image }}:${{ format('v1.0.{0}', github.run_number) }}

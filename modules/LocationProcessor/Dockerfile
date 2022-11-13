@@ -1,13 +1,19 @@
-FROM python:3.7-alpine
+FROM ubuntu:18.04
 
 WORKDIR .
 
-RUN apk add --no-cache gcc musl-dev linux-headers geos libc-dev postgresql-dev
+RUN apt-get update
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository ppa:deadsnakes/ppa
+RUN apt-get update
+RUN apt-get install -y python3.6
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN apt-get install -y python3-pip
 
-COPY . .
-RUN pip install -r requirements.txt
+COPY ./modules/LocationProcessor .
+
+RUN pip3 install -r requirements.txt
 
 EXPOSE 5000
 
-COPY . .
 ENTRYPOINT ["python", "run_location_processor.py"]

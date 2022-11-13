@@ -1,6 +1,7 @@
 from concurrent import futures
 
 import grpc
+import os
 
 from app.udaconnect import person_event_pb2
 from app.udaconnect import person_event_pb2_grpc
@@ -12,11 +13,19 @@ from sqlalchemy import BigInteger, Column, Date, DateTime, ForeignKey, Integer, 
 from typing import Dict, List
 
 
-DB_USERNAME = "ct_admin"
-DB_PASSWORD = "password"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "geoconnections"
+# DB_USERNAME = "ct_admin"
+# DB_PASSWORD = "password"
+# DB_HOST = "localhost"
+# DB_PORT = "5432"
+# DB_NAME = "geoconnections"
+
+
+DB_USERNAME = os.environ["DB_USERNAME"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
+DB_HOST = os.environ["DB_HOST"]
+DB_PORT = os.environ["DB_PORT"]
+DB_NAME = os.environ["DB_NAME"]
+
 
 # SQLALCHEMY_DATABASE_URI = (
 #     f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

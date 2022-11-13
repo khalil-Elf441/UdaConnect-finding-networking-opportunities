@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List
-
+import os
 
 import requests
 import json
@@ -20,8 +20,12 @@ logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("PersonService-api")
 
 
-LOCATION_ENDPOINT_PORT = 5002
-LOCATION_ENDPOINT = "http://localhost:{PORT}/api/locations/{person_id}/daterange"
+# LOCATION_ENDPOINT_PORT = 5002
+# LOCATION_ENDPOINT = "http://{LOCATION_SERVICE}:{PORT}/api/locations/{person_id}/daterange"
+
+LOCATION_SERVICE_PORT = os.environ["LOCATION_ENDPOINT_PORT"]
+LOCATION_SERVICE = os.environ["LOCATION_SERVICE"]
+LOCATION_ENDPOINT = "http://{locationservice}:{port}/api/locations/{person_id}/daterange"
 
 # @TODO refacto as independent service
 class ConnectionService:
@@ -47,7 +51,7 @@ class ConnectionService:
 
         PARAMS = {'start_date': start_date, 'end_date': end_date}
 
-        locations: List = requests.get(url=LOCATION_ENDPOINT.format(PORT=LOCATION_ENDPOINT_PORT, person_id=person_id), params=PARAMS).json()
+        locations: List = requests.get(url=LOCATION_ENDPOINT.format(locationservice=LOCATION_SERVICE, port=LOCATION_SERVICE_PORT, person_id=person_id), params=PARAMS).json()
 
         # Cache all users in memory for quick lookup
         # @TODO Make this communication with gRPC / gRPC Stub / gRPC Client

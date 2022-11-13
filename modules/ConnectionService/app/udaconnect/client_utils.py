@@ -1,5 +1,5 @@
 import grpc
-
+import os
 # import person_event_pb2
 # import person_event_pb2_grpc
 
@@ -16,11 +16,20 @@ from sqlalchemy import BigInteger, Column, Date, DateTime, ForeignKey, Integer, 
 from typing import Dict, List
 
 
-DB_USERNAME = "ct_admin"
-DB_PASSWORD = "password"
-DB_HOST = "localhost"
-DB_PORT = "5432"
-DB_NAME = "geoconnections"
+
+DB_USERNAME = os.environ["DB_USERNAME"]
+DB_PASSWORD = os.environ["DB_PASSWORD"]
+DB_HOST = os.environ["DB_HOST"]
+DB_PORT = os.environ["DB_PORT"]
+DB_NAME = os.environ["DB_NAME"]
+GRPC_SERVER=os.environ["GRPC_SERVER"]
+
+
+# DB_USERNAME = "ct_admin"
+# DB_PASSWORD = "password"
+# DB_HOST = "localhost"
+# DB_PORT = "5432"
+# DB_NAME = "geoconnections"
 
 # SQLALCHEMY_DATABASE_URI = (
 #     f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
@@ -38,9 +47,11 @@ Sample implementation of a writer that can be used to write messages to gRPC.
 """
 
 
+
+
 print("Sending sample payload...")
 
-channel = grpc.insecure_channel("localhost:5005")
+channel = grpc.insecure_channel(GRPC_SERVER)
 stub = person_event_pb2_grpc.PersonServiceGrpcStub(channel)
 
 

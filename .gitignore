@@ -9,7 +9,7 @@ dist/
 udaconnect-env/
 docs/
 old_ConnectionService/
-api/
+modules/api/
 
 
 # Byte-compiled / optimized / DLL files
