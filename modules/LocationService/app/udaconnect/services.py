@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List
 import json
+import os
 
 from app import db
 from app.udaconnect.models import Connection, Location, Person

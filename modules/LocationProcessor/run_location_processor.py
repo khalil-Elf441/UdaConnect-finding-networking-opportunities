@@ -10,14 +10,13 @@ from kafka import KafkaConsumer
 
 from multiprocessing import Process
 
-from dataclasses import dataclass
 from datetime import datetime
 
 from geoalchemy2 import Geometry
 from geoalchemy2.shape import to_shape
 from shapely.geometry.point import Point
-from sqlalchemy import BigInteger, Column, Date, DateTime, ForeignKey, Integer, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
+
 from sqlalchemy.ext.hybrid import hybrid_property
 
 
