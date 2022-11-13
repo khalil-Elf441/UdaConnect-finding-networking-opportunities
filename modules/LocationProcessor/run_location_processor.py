@@ -101,10 +101,11 @@ def insertLocation(location):
     print("new location has been inserted")
 
 
+consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
 
 
 def consumer_main():
-    consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
+    app.logger.info('Run consumer process')
     # check if the consumer would be listing the topics
     topics = consumer.topics()
 
@@ -123,18 +124,27 @@ def run_app():
 consumer_process = Process(name="consumer_process", target=consumer_main)
 run_app_process = Process(target=run_app)
 
-@app.route("/health")
+@app.route("/health", methods = ['GET'])
 def health():
     return jsonify("healthy LocationProcessor")
 
 @app.route("/start", methods = ['POST'])
 def start():
+    app.logger.info('request start consumer')
     if not consumer_process.is_alive():
         consumer_process.start()
         consumer_process.join()
 
     return jsonify(f"Run {consumer_process.name} on {consumer_process.pid}")
 
+
+@app.route("/consumerstatus", methods = ['GET'])
+def consumerstatus():
+    if not consumer_process.is_alive():
+        return jsonify(f"{consumer_process.name} is alive on {consumer_process.pid}")
+    return jsonify(f"{consumer_process.name} is shutdown")
+    
+    
 # STOP the consumer remotly - UNF
 #@app.route("/stop")
 #def stop():
