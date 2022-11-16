@@ -132,7 +132,7 @@ class LocationProcessor(multiprocessing.Process):
     def run(self):
         global consumer
         try:
-            consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, group_id='my_group', consumer_timeout_ms=10000)
+            consumer = KafkaConsumer(bootstrap_servers=KAFKA_SERVER, group_id='my_group')
             consumer.subscribe([TOPIC_NAME])
             while not self.stop_event.is_set():
                 for location in consumer:
@@ -143,8 +143,10 @@ class LocationProcessor(multiprocessing.Process):
                     if self.stop_event.is_set():
                         break
             consumer.close()
+            print("consumer has closed")
+            logging.warn("consumer has closed")
         except Exception as e:
-            print("consumer error")
+            print("consumer generate Exception")
             logging.info("Issue with getting locations from queue" )
             logging.error(e)
 
@@ -181,11 +183,13 @@ def status():
     return jsonify("consumer_process is not running"), 200
 
 
-@app.route("/stop", methods = ['POST'])
+@app.route("/destroy", methods = ['POST'])
 def stop():
+    app.logger.info('Destroy consumer')
     if consumer_process is not None and consumer_process.is_alive():
         consumer_process.stop()
-        return jsonify("consumer_process is stopped"), 200
+        consumer_process = None
+        return jsonify("consumer_process is destroyed"), 200
         
     return jsonify("consumer_process is not running"), 500
 
