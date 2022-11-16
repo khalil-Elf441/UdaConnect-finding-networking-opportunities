@@ -22,24 +22,24 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 
 
-DB_USERNAME = os.environ["DB_USERNAME"]
-DB_PASSWORD = os.environ["DB_PASSWORD"]
-DB_HOST = os.environ["DB_HOST"]
-DB_PORT = os.environ["DB_PORT"]
-DB_NAME = os.environ["DB_NAME"]
+#DB_USERNAME = os.environ["DB_USERNAME"]
+#DB_PASSWORD = os.environ["DB_PASSWORD"]
+#DB_HOST = os.environ["DB_HOST"]
+#DB_PORT = os.environ["DB_PORT"]
+#DB_NAME = os.environ["DB_NAME"]
 
-TOPIC_NAME = os.environ["TOPIC_NAME"]
-KAFKA_SERVER = os.environ["KAFKA_SERVER"]
+#TOPIC_NAME = os.environ["TOPIC_NAME"]
+#KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
-# DB_USERNAME = "ct_admin"
-# DB_PASSWORD = "password"
-# DB_HOST = "localhost"
-# DB_PORT = "5432"
-# DB_NAME = "geoconnections"
+DB_USERNAME = "ct_admin"
+DB_PASSWORD = "password"
+DB_HOST = "localhost"
+DB_PORT = "5432"
+DB_NAME = "geoconnections"
 
 
-# TOPIC_NAME = 'locations'
-# KAFKA_SERVER = '127.0.0.1:9092'
+TOPIC_NAME = 'locations'
+KAFKA_SERVER = '127.0.0.1:9092'
 
 
 
@@ -174,8 +174,8 @@ def status():
     global consumer_process
     if consumer_process is not None and isinstance(consumer_process, multiprocessing.Process):
         try:
-            if not consumer_process.is_alive():
-                return jsonify(f"consumer is alive on {consumer_process.pid}"), 200
+            if consumer_process.is_alive():
+               return jsonify(f"consumer is alive on {consumer_process.pid}"), 200
         except Exception as e:
             print(e)
             return jsonify(f"Unable to get consumer status"), 500
@@ -186,8 +186,10 @@ def status():
 @app.route("/destroy", methods = ['POST'])
 def stop():
     app.logger.info('Destroy consumer')
+    global consumer_process
     if consumer_process is not None and consumer_process.is_alive():
         consumer_process.stop()
+        
         consumer_process = None
         return jsonify("consumer_process is destroyed"), 200
         
