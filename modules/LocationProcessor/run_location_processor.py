@@ -174,7 +174,7 @@ def start():
         try:
             consumer_process = LocationProcessor()
             consumer_process.start()
-#            consumer_process.join()
+            consumer_process.join()
             return jsonify(f"Run consumer on {consumer_process.pid}"), 200
         except Exception as e:
             traceback.print_exc()
