@@ -1,0 +1,286 @@
+{
+	"info": {
+		"_postman_id": "156caec3-6768-4913-912f-4e393ee2ea7a",
+		"name": "UdaConnect",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "LP Start",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:30010/admin/start",
+					"host": [
+						"localhost"
+					],
+					"port": "30010",
+					"path": [
+						"admin",
+						"start"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LP Status",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:30010/admin/status",
+					"host": [
+						"localhost"
+					],
+					"port": "30010",
+					"path": [
+						"admin",
+						"status"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PS Run gRPC Server",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:30001/admin/grpcstart",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "30001",
+					"path": [
+						"admin",
+						"grpcstart"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LS Daterange",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:30002/api/locations/1/daterange?start_date=2020-01-01 16:39:51&end_date=2020-12-30 16:39:51&distance=5",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "30002",
+					"path": [
+						"api",
+						"locations",
+						"1",
+						"daterange"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2020-01-01 16:39:51"
+						},
+						{
+							"key": "end_date",
+							"value": "2020-12-30 16:39:51"
+						},
+						{
+							"key": "distance",
+							"value": "5"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LS Retrieve",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:30002/api/locations/68",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "30002",
+					"path": [
+						"api",
+						"locations",
+						"68"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LS Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"latitude\": \"-135.291893\",\r\n    \"longitude\": \"39.01287\",\r\n    \"person_id\": 6,\r\n    \"creation_time\": \"2022-11-11\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "127.0.0.1:30002/api/locations",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "30002",
+					"path": [
+						"api",
+						"locations"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CS Findcontacts / gRPC client",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:30003/api/persons/1/connection?start_date=2020-01-01&end_date=2020-12-30",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "30003",
+					"path": [
+						"api",
+						"persons",
+						"1",
+						"connection"
+					],
+					"query": [
+						{
+							"key": "start_date",
+							"value": "2020-01-01"
+						},
+						{
+							"key": "end_date",
+							"value": "2020-12-30"
+						},
+						{
+							"key": "distance",
+							"value": "5",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PS Retrieve all",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:30001/api/persons",
+					"host": [
+						"localhost"
+					],
+					"port": "30001",
+					"path": [
+						"api",
+						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PS Create",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\":\"10\",\r\n    \"first_name\": \"Khalil\",\r\n    \"last_name\": \"EL\",\r\n    \"company_name\": \"udaconnect\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:30001/api/persons",
+					"host": [
+						"localhost"
+					],
+					"port": "30001",
+					"path": [
+						"api",
+						"persons"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "PS Retrieve by Id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:30001/api/persons/6",
+					"host": [
+						"localhost"
+					],
+					"port": "30001",
+					"path": [
+						"api",
+						"persons",
+						"6"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "LP destroy",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:30010/admin/destroy",
+					"host": [
+						"localhost"
+					],
+					"port": "30010",
+					"path": [
+						"admin",
+						"destroy"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
