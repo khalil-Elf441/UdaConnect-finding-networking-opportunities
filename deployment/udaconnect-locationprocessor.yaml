@@ -9,7 +9,7 @@ spec:
   - name: "5000"
     port: 5000
     targetPort: 5000
-    nodePort: 30000
+    nodePort: 30010
   selector:
     service: udaconnect-locationprocessor
   type: NodePort
@@ -61,7 +61,7 @@ spec:
               name: db-env
               key: DB_PORT
         - name: KAFKA_SERVER
-          value: kafka.default.svc.cluster.local:9092
+          value: "kafka.default.svc.cluster.local:9092"
         - name: TOPIC_NAME
           value: locations 
 
