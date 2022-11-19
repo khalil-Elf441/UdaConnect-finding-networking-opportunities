@@ -1,6 +1,6 @@
 import logging
 import os
-
+import sys
 
 import json
 from flask import Flask, render_template, request, jsonify
@@ -9,7 +9,8 @@ from geoalchemy2.functions import ST_AsText, ST_Point
 from kafka import KafkaConsumer
 from flask_cors import CORS
 
-from multiprocessing import Process
+import multiprocessing
+import traceback
 
 from datetime import datetime
 
@@ -20,8 +21,6 @@ from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String
 
 from sqlalchemy.ext.hybrid import hybrid_property
 
-
-
 DB_USERNAME = os.environ["DB_USERNAME"]
 DB_PASSWORD = os.environ["DB_PASSWORD"]
 DB_HOST = os.environ["DB_HOST"]
@@ -31,6 +30,16 @@ DB_NAME = os.environ["DB_NAME"]
 TOPIC_NAME = os.environ["TOPIC_NAME"]
 KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
+#DB_USERNAME = "ct_admin"
+#DB_PASSWORD = "password"
+#DB_HOST = "localhost"
+#DB_PORT = "5432"
+#DB_NAME = "geoconnections"
+
+#TOPIC_NAME = 'locations'
+#KAFKA_SERVER = '127.0.0.1:9092'
+
+
 
 app = Flask(__name__)
 
@@ -39,10 +48,9 @@ CORS(app)  # Set CORS for development
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger("LocationProcessor-api")
-
-
+#logging.basicConfig(level=logging.WARNING)
+#logger = logging.getLogger("LocationProcessor-api")
+# Check data : ./opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server  localhost:9092 --topic locations --from-beginning
 
 db = SQLAlchemy(app)
 
@@ -100,58 +108,125 @@ def insertLocation(location):
     db.session.commit()
     print("new location has been inserted")
 
-
-consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
-
-
-def consumer_main():
-    app.logger.info('Run consumer process')
-    # check if the consumer would be listing the topics
-    topics = consumer.topics()
-
-    if not topics:
-        raise RuntimeError()
-
-    for location in consumer:
-        location_message = location.value.decode('utf-8')
-        print('{}'.format(location_message))
-        location_message = json.loads(location_message)
-        insertLocation(location_message)
-        
-def run_app():
-    app.run(host='0.0.0.0', debug=False, port=5000)
-
-consumer_process = Process(name="consumer_process", target=consumer_main)
-run_app_process = Process(target=run_app)
-
 @app.route("/health", methods = ['GET'])
 def health():
     return jsonify("healthy LocationProcessor")
 
+
+
+class LocationProcessor(multiprocessing.Process):
+#    consumer = None
+
+    def __init__(self):
+        multiprocessing.Process.__init__(self)
+        self.stop_event = multiprocessing.Event()
+        self.consumer = None
+    
+#    @property
+#    def consumer(self):
+#        return self._consumer
+        
+#    @consumer.setter
+#    def consumer(self, value):
+#        self._consumer = value
+    
+    def stop(self):
+        self.stop_event.set()
+
+    def diag(self):
+#        global consumer
+        return {"bootstrap_connected":self.consumer.bootstrap_connected(), "current subscription": self.consumer.subscription()}
+
+    def run(self):
+#       global consumer
+        try:
+            if self.consumer is None:
+               self.consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
+                
+            while not self.stop_event.is_set():
+                print(f"listenning to the topic {TOPIC_NAME}")
+                print(self.consumer.subscription())
+                print(self.consumer.bootstrap_connected())
+                for location in self.consumer:
+                    location_message = location.value.decode('utf-8')
+                    print('{}'.format(location_message))
+                    location_message = json.loads(location_message)
+                    insertLocation(location_message)
+                    if self.stop_event.is_set():
+                        break
+            self.consumer.close()
+            print("consumer has closed")
+            logging.warn("consumer has closed")
+        except Exception as e:
+            print("consumer generate Exception")
+            traceback.print_exc()
+            logging.error("Issue with getting locations from queue" )
+            logging.error(e)
+
+
+consumer_process = None
+
 @app.route("/start", methods = ['POST'])
 def start():
     app.logger.info('request start consumer')
-    if not consumer_process.is_alive():
-        consumer_process.start()
-        consumer_process.join()
+    global consumer_process
+    if consumer_process is None:
+        try:
+            consumer_process = LocationProcessor()
+            consumer_process.start()
+            consumer_process.join()
+            return jsonify(f"Run consumer on {consumer_process.pid}"), 200
+        except Exception as e:
+            traceback.print_exc()
+            print(e)
 
-    return jsonify(f"Run {consumer_process.name} on {consumer_process.pid}")
+    return jsonify(f"Unable to create consumer process"), 500
 
 
-@app.route("/consumerstatus", methods = ['GET'])
-def consumerstatus():
-    if not consumer_process.is_alive():
-        return jsonify(f"{consumer_process.name} is alive on {consumer_process.pid}")
-    return jsonify(f"{consumer_process.name} is shutdown")
-    
-    
-# STOP the consumer remotly - UNF
-#@app.route("/stop")
-#def stop():
-#    if t_consumer.is_alive():
-#        consumer.close()
-#        t_consumer.stop()
-#    return jsonify("stop consumer")
+@app.route("/status", methods = ['GET'])
+def status():
+    app.logger.info('request status consumer')
+    global consumer_process
+    if consumer_process is not None and isinstance(consumer_process, multiprocessing.Process):
+        try:
+            if consumer_process.is_alive():
+               return jsonify(f"consumer is alive on {consumer_process.pid}"), 200
+        except Exception as e:
+            print(e)
+            return jsonify(f"Unable to get consumer status"), 500
+
+    return jsonify("consumer_process is not running"), 200
+
+
+@app.route("/destroy", methods = ['POST'])
+def stop():
+    app.logger.info('Destroy consumer')
+    global consumer_process
+    if consumer_process is not None and consumer_process.is_alive():
+        consumer_process.stop()
+        
+        consumer_process = None
+        return jsonify("consumer_process is destroyed"), 200
+        
+    return jsonify("consumer_process is not running"), 500
+
+
+#@app.route("/sub", methods = ['GET'])
+#def sub():
+#    app.logger.info('Destroy consumer')
+#    global consumer_process
+#    if consumer_process is not None and consumer_process.is_alive():
+#        return jsonify(consumer_process.diag()), 200
+#        
+#    return jsonify("unable to get the current topic subscription"), 500
+
+
+def run_app():
+    app.run(host='0.0.0.0', debug=True, port=5000)
+
+
+run_app_process = multiprocessing.Process(target=run_app)
+
 
 
 if __name__ == '__main__':
