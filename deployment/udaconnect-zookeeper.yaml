@@ -21,7 +21,7 @@ metadata:
     service: zookeeper
   name: zookeeper
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       service: zookeeper
