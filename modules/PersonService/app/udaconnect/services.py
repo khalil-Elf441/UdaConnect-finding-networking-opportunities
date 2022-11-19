@@ -126,6 +126,7 @@ class PersonService:
     @staticmethod
     def create(person: Dict) -> Person:
         new_person = Person()
+        new_person.id = int(person["id"])
         new_person.first_name = person["first_name"]
         new_person.last_name = person["last_name"]
         new_person.company_name = person["company_name"]
