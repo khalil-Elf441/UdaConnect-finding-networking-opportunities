@@ -30,17 +30,6 @@ DB_NAME = os.environ["DB_NAME"]
 TOPIC_NAME = os.environ["TOPIC_NAME"]
 KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
-#DB_USERNAME = "ct_admin"
-#DB_PASSWORD = "password"
-#DB_HOST = "localhost"
-#DB_PORT = "5432"
-#DB_NAME = "geoconnections"
-
-#TOPIC_NAME = 'locations'
-#KAFKA_SERVER = '127.0.0.1:9092'
-
-
-
 app = Flask(__name__)
 
 CORS(app)  # Set CORS for development
@@ -48,9 +37,6 @@ CORS(app)  # Set CORS for development
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#logging.basicConfig(level=logging.WARNING)
-#logger = logging.getLogger("LocationProcessor-api")
-# Check data : ./opt/bitnami/kafka/bin/kafka-console-consumer.sh --bootstrap-server  localhost:9092 --topic locations --from-beginning
 
 db = SQLAlchemy(app)
 
@@ -99,6 +85,7 @@ class Location(db.Model):
         return coord_text[coord_text.find("(") + 1 : coord_text.find(" ")]
 
 def insertLocation(location):
+    print("="*12+"New create Query"+"="*12)
     try:
         new_location = Location()
         new_location.person_id = location["person_id"]
@@ -106,9 +93,9 @@ def insertLocation(location):
         new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
         db.session.add(new_location)
         db.session.commit()
-        print("new location has been inserted!")
+        print("New location has been inserted!")
     except Exception as e:
-        print("Unable to insert the query")
+        print("ERROR: Unable to insert the query")
         print(e)
         pass
         
@@ -121,33 +108,28 @@ def health():
 
 
 class LocationProcessor(multiprocessing.Process):
-#    consumer = None
 
     def __init__(self):
         multiprocessing.Process.__init__(self)
         self.stop_event = multiprocessing.Event()
         self.consumer = None
     
-#    @property
-#    def consumer(self):
-#        return self._consumer
-        
-#    @consumer.setter
-#    def consumer(self, value):
-#        self._consumer = value
     
     def stop(self):
         self.stop_event.set()
 
     def diag(self):
-#        global consumer
         return {"bootstrap_connected":self.consumer.bootstrap_connected(), "current subscription": self.consumer.subscription()}
 
     def run(self):
-#       global consumer
         try:
             if self.consumer is None:
                self.consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
+               print("Creating consumer")
+               print("      __        __   __             ___  __  ___        __   __        __              ___  __  ")
+               print("|  | |  \  /\  /  ` /  \ |\ | |\ | |__  /  `  |     __ /  ` /  \ |\ | /__` |  |  |\/| |__  |__) ")
+               print("\__/ |__/ /~~\ \__, \__/ | \| | \| |___ \__,  |        \__, \__/ | \| .__/ \__/  |  | |___ |  \ ")
+               print("                                                                                                ")
                 
             while not self.stop_event.is_set():
                 print("listenning to the topic(s)")
@@ -164,12 +146,12 @@ class LocationProcessor(multiprocessing.Process):
                         break
             self.consumer.close()
             print("consumer has closed")
-            logging.warn("consumer has closed")
+            app.logger.warn("consumer has closed")
         except Exception as e:
             print("consumer generate Exception")
             traceback.print_exc()
-            logging.error("Issue with getting locations from queue" )
-            logging.error(e)
+            app.logger.error("Issue with getting locations from queue" )
+            app.logger.error(e)
 
 
 consumer_process = None
@@ -183,7 +165,7 @@ def start():
             consumer_process = LocationProcessor()
             consumer_process.start()
             consumer_process.join()
-            return jsonify(f"Run consumer on {consumer_process.pid}"), 200
+            return jsonify(f"Consumer is started successfully"), 200
         except Exception as e:
             traceback.print_exc()
             print(e)
@@ -219,7 +201,7 @@ def stop():
         
     return jsonify("Unable to destroy consumer_process"), 500
 
-
+# Diag kafka Consumer - UNF
 #@app.route("/sub", methods = ['GET'])
 #def sub():
 #    app.logger.info('Destroy consumer')
