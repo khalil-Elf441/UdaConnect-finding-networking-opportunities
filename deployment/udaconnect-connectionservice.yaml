@@ -61,9 +61,9 @@ spec:
               name: db-env
               key: DB_PORT
         - name: LOCATION_ENDPOINT_PORT
-          value: "5002"
+          value: "30002"
         - name: LOCATION_SERVICE
           value: localhost
         - name: GRPC_SERVER
-          value: localhost:5005
+          value: localhost:30005
       restartPolicy: Always
