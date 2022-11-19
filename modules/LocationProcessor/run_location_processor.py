@@ -99,14 +99,20 @@ class Location(db.Model):
         return coord_text[coord_text.find("(") + 1 : coord_text.find(" ")]
 
 def insertLocation(location):
-
-    new_location = Location()
-    new_location.person_id = location["person_id"]
-    new_location.creation_time = location["creation_time"]
-    new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
-    db.session.add(new_location)
-    db.session.commit()
-    print("new location has been inserted")
+    try:
+        new_location = Location()
+        new_location.person_id = location["person_id"]
+        new_location.creation_time = location["creation_time"]
+        new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
+        db.session.add(new_location)
+        db.session.commit()
+        print("new location has been inserted!")
+    except Exception as e:
+        print("Unable to insert the query")
+        print(e)
+        pass
+        
+    
 
 @app.route("/health", methods = ['GET'])
 def health():
@@ -144,9 +150,11 @@ class LocationProcessor(multiprocessing.Process):
                self.consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
                 
             while not self.stop_event.is_set():
-                print(f"listenning to the topic {TOPIC_NAME}")
+                print("listenning to the topic(s)")
                 print(self.consumer.subscription())
+                print("Consumer bootstrap_connected")
                 print(self.consumer.bootstrap_connected())
+                
                 for location in self.consumer:
                     location_message = location.value.decode('utf-8')
                     print('{}'.format(location_message))
@@ -168,7 +176,7 @@ consumer_process = None
 
 @app.route("/start", methods = ['POST'])
 def start():
-    app.logger.info('request start consumer')
+    app.logger.info('Request start consumer')
     global consumer_process
     if consumer_process is None:
         try:
@@ -185,7 +193,7 @@ def start():
 
 @app.route("/status", methods = ['GET'])
 def status():
-    app.logger.info('request status consumer')
+    app.logger.info('Request Status consumer')
     global consumer_process
     if consumer_process is not None and isinstance(consumer_process, multiprocessing.Process):
         try:
@@ -200,15 +208,16 @@ def status():
 
 @app.route("/destroy", methods = ['POST'])
 def stop():
-    app.logger.info('Destroy consumer')
+    app.logger.info('Request Destroy consumer')
     global consumer_process
-    if consumer_process is not None and consumer_process.is_alive():
-        consumer_process.stop()
+    if consumer_process is not None:
+        if consumer_process.is_alive():
+            consumer_process.stop()
         
         consumer_process = None
         return jsonify("consumer_process is destroyed"), 200
         
-    return jsonify("consumer_process is not running"), 500
+    return jsonify("Unable to destroy consumer_process"), 500
 
 
 #@app.route("/sub", methods = ['GET'])
@@ -222,7 +231,9 @@ def stop():
 
 
 def run_app():
+    app.logger.setLevel(logging.ERROR)
     app.run(host='0.0.0.0', debug=True, port=5000)
+
 
 
 run_app_process = multiprocessing.Process(target=run_app)
