@@ -61,9 +61,9 @@ spec:
               name: db-env
               key: DB_PORT
         - name: LOCATION_ENDPOINT_PORT
-          value: "30002"
+          value: "5002"
         - name: LOCATION_SERVICE
           value: udaconnect-locationservice
         - name: GRPC_SERVER
-          value: udaconnect-personservice:30005
+          value: udaconnect-personservice:5005
       restartPolicy: Always
