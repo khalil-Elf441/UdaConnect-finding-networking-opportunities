@@ -86,6 +86,7 @@ class Location(db.Model):
 
 def insertLocation(location):
     print("="*12+"New create Query"+"="*12)
+    print('{}'.format(location_message))
     try:
         new_location = Location()
         new_location.person_id = location["person_id"]
@@ -139,7 +140,6 @@ class LocationProcessor(multiprocessing.Process):
                 
                 for location in self.consumer:
                     location_message = location.value.decode('utf-8')
-                    print('{}'.format(location_message))
                     location_message = json.loads(location_message)
                     insertLocation(location_message)
                     if self.stop_event.is_set():
@@ -164,7 +164,7 @@ def start():
             consumer_process = LocationProcessor()
             consumer_process.start()
             consumer_process.join()
-            return jsonify(f"Consumer is started successfully"), 200
+            return jsonify(f"Consumer is finished"), 200
         except Exception as e:
             traceback.print_exc()
             print(e)
