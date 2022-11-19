@@ -1,49 +1,24 @@
-Tracking users locations generate a lot of geo data.
-We except a large volume of geo data from the users that s why posinning a fault tolerance component like kafka can handle the volume of data like queue
-wihtout crashing the system
+UdaConnect system is composed of four main microsevices:
 
-Signle reponsiblity only: one services should hanlde the locations data as this we can have more control in our system 
+1.2. LocationService
 
-Cache all users in memory for quick lookup
+The Location Service implements one of the main SOLID principles in object-oriented design, namely the principle of single responsibility, which means that the Location Service manages and processes only the data that depends on the location data. not the Connection Service in monolithic architecture.
+The location service provides a REST API capable of simple HTTP-based interactions. Since we expect a large volume of location data to be provided by clients and tracking their locations, it is linked to the Kafka queue to produce new locations that need to be inserted into the Kafka queue.
+Kafka builds on the fault tolerance capabilities it allows to handle a large volume of requests and helps to reduce the load of persisting the new location to the database.
+As the location service is the central service responsible for processing location-related data, it also responds to the ConnectionService to allow it to build its query
 
-1. Architecture diagram
+1.3. LocationProcessor
 
+The location processor is used to retrieve new location data from the Kafka queue and write it to the database. 
+To facilitate the management of this service, the administrator can start /start, stop /destroy, or know the status of the /status microservice, by HTTP GET/POST requests.
 
+1.4. ConnectionService
 
-1.1. LocationService
+The connection service is used to respond to client requests for connections between people.
+The connection service builds its request and retrieves information from other services (LocationService, PersonService)
+it makes its requests to the PersonService using the gRPC protocol which provides a high response time.
 
- Frontend facing module that is responsible for handling Person data and services.
- It provides a REST API capable of simple interactions based on HTTP protocol. In addition, it relies on Kafka-based
- messaging producer service for producing new entities, avoiding locking clients while persisting them in the database.
+1.5. PersonService
 
- It also provides to the frontend access to the geolocation feature by communication via gRPC with ConnectionData API,
- achieving better performance with small serialized protobuf messages.
-
-1.2. ConnectionService
-
- Frontend facing module that is responsible for handling Location data and services.
- Similar to Person API, the Location API handles frontend interaction with REST-based communication and the Location
- entities persistence are made through Kafka-based messaging.
-
-1.3. PersonService
-
- Internal API that provides geolocation capabilities to the MVP. It is based on gRPC and the following were considered
- in this decision:
-
- * No browser support is needed
- * Fast serialization
- * Small message payload - mainly binary communication through HTTP 2
- * Native message strict contracts - .proto files describe a well formed message
-
-1.4. LocationProcessor
-
- This module main responsibility is to contain all consumers implementations for Person and Location API(and any other
- in the future).
- Since it decouples the consumers from the API/Producers, this module may be scaled in an arbitrary fashion without leading
- to any unwanted behavior in the API's operations.
-
-1.5. Other Aspects
-
- * Microservices are using a shared database pattern.
- * Python version updated to 3.9-alpine
- * Using simple Kubernetes & Kafka deployment based on Bitnami images Github(https://github.com/bitnami/bitnami-docker-kafka)
+the person service provides the data for the clients through the HTTP protocol.
+it is also a grpc server that responds to the requests of the connection service through the grpc achieving better performance with small serialized protobuf messages.
