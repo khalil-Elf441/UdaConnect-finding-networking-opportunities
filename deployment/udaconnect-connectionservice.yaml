@@ -63,7 +63,7 @@ spec:
         - name: LOCATION_ENDPOINT_PORT
           value: "5002"
         - name: LOCATION_SERVICE
-          value: udaconnect-locationservice
+          value: localhost
         - name: GRPC_SERVER
-          value: udaconnect-personservice:5005
+          value: localhost:5005
       restartPolicy: Always
