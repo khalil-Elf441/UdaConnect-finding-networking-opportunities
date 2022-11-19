@@ -60,14 +60,9 @@ spec:
             configMapKeyRef:
               name: db-env
               key: DB_PORT
-        - name: TOPIC_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: kafka-env
-              key: TOPIC_NAME
         - name: KAFKA_SERVER
-          valueFrom:
-            configMapKeyRef:
-              name: kafka-env
-              key: KAFKA_SERVER
+          value: kafka.default.svc.cluster.local:9092
+        - name: TOPIC_NAME
+          value: locations 
+
       restartPolicy: Always

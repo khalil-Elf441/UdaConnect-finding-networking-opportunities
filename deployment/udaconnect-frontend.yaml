@@ -41,4 +41,9 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "256m"
+        env:
+        - name: REACT_APP_CONNECTION_SERVICE
+          value: udaconnect-connectionservice:5003
+        - name: REACT_APP_PERSON_SERVICE
+          value: udaconnect-personservice:5001
       restartPolicy: Always
