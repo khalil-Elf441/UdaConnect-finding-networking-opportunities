@@ -23,7 +23,7 @@ def create_app(env=None):
 
     grpc_server_process = Process(name="gRPC_Server", target=run_grpc_server)
 
-    @app.route("/grpcstart", methods = ['POST'])
+    @app.route("/admin/grpcstart", methods = ['POST'])
     def grpc_server():
 
         grpc_server_process.start()
