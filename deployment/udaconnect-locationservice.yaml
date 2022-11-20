@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - image: khalilelf441/udaconnect-locationservice:latest
-        name: uudaconnect-locationservice
+        name: udaconnect-locationservice
         imagePullPolicy: Always
         env:
         - name: DB_USERNAME
@@ -59,15 +59,10 @@ spec:
           valueFrom:
             configMapKeyRef:
               name: db-env
-              key: DB_PORT
-        - name: TOPIC_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: kafka-env
-              key: TOPIC_NAME
+              key: DB_PORT            
         - name: KAFKA_SERVER
-          valueFrom:
-            configMapKeyRef:
-              name: kafka-env
-              key: KAFKA_SERVER
+          value: kafka.default.svc.cluster.local:9092
+        - name: TOPIC_NAME
+          value: locations 
+
       restartPolicy: Always

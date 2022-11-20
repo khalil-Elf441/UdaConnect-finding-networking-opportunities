@@ -9,7 +9,7 @@ spec:
   - name: "3000"
     port: 3000
     targetPort: 3000
-    nodePort: 30000
+    nodePort: 30006
   selector:
     service: udaconnect-frontend
   type: NodePort
@@ -41,4 +41,9 @@ spec:
           limits:
             memory: "256Mi"
             cpu: "256m"
+        env:
+        - name: REACT_APP_CONNECTION_SERVICE
+          value: localhost:30003
+        - name: REACT_APP_PERSON_SERVICE
+          value: localhost:30001
       restartPolicy: Always
