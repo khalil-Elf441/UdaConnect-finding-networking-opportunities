@@ -24,17 +24,6 @@ DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
 GRPC_SERVER=os.environ["GRPC_SERVER"]
 
-
-# DB_USERNAME = "ct_admin"
-# DB_PASSWORD = "password"
-# DB_HOST = "localhost"
-# DB_PORT = "5432"
-# DB_NAME = "geoconnections"
-
-# SQLALCHEMY_DATABASE_URI = (
-#     f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
-# )
-
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = f"postgresql://{DB_USERNAME}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"

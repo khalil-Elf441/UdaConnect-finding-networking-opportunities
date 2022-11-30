@@ -13,9 +13,6 @@ from datetime import datetime
 
 from kafka import KafkaProducer
 
-# TOPIC_NAME = 'locations'
-# KAFKA_SERVER = '127.0.0.1:9092'
-
 TOPIC_NAME = os.environ["TOPIC_NAME"]
 KAFKA_SERVER = os.environ["KAFKA_SERVER"]
 
@@ -27,7 +24,6 @@ logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("LocationService-api")
 
 
-# @TODO refacto as independent service
 class LocationService:
     @staticmethod
     def retrieve(location_id) -> Location:

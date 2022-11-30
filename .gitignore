@@ -7,7 +7,6 @@ dist/
 .pytest_cache/
 .vscode/
 udaconnect-env/
-docs/
 old_ConnectionService/
 modules/api/
 

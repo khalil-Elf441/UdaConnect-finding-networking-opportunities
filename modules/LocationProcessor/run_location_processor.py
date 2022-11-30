@@ -85,7 +85,8 @@ class Location(db.Model):
         return coord_text[coord_text.find("(") + 1 : coord_text.find(" ")]
 
 def insertLocation(location):
-    print("="*12+"New create Query"+"="*12)
+    app.logger.info("="*12+"New create Query"+"="*12)
+    app.logger.info('{}'.format(location))
     try:
         new_location = Location()
         new_location.person_id = location["person_id"]
@@ -93,10 +94,10 @@ def insertLocation(location):
         new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
         db.session.add(new_location)
         db.session.commit()
-        print("New location has been inserted!")
+        app.logger.info("New location has been inserted!")
     except Exception as e:
-        print("ERROR: Unable to insert the query")
-        print(e)
+        app.logger.error("ERROR: Unable to insert the query")
+        app.logger.error(e)
         pass
         
     
@@ -125,30 +126,30 @@ class LocationProcessor(multiprocessing.Process):
         try:
             if self.consumer is None:
                self.consumer = KafkaConsumer(TOPIC_NAME, bootstrap_servers=KAFKA_SERVER, group_id='my_group')
-               print("Creating consumer")
-               print("      __        __   __             ___  __  ___        __   __        __              ___  __  ")
-               print("|  | |  \  /\  /  ` /  \ |\ | |\ | |__  /  `  |     __ /  ` /  \ |\ | /__` |  |  |\/| |__  |__) ")
-               print("\__/ |__/ /~~\ \__, \__/ | \| | \| |___ \__,  |        \__, \__/ | \| .__/ \__/  |  | |___ |  \ ")
-               print("                                                                                                ")
+               app.logger.info("====> Creating Kafka consumer - LocationProcessor")
+               app.logger.info("  _                    _   _             ____                                         ")
+               app.logger.info(" | |    ___   ___ __ _| |_(_) ___  _ __ |  _ \ _ __ ___   ___ ___  ___ ___  ___  _ __ ")
+               app.logger.info(" | |   / _ \ / __/ _` | __| |/ _ \| '_ \| |_) | '__/ _ \ / __/ _ \/ __/ __|/ _ \| '__|")
+               app.logger.info(" | |__| (_) | (_| (_| | |_| | (_) | | | |  __/| | | (_) | (_|  __/\__ \__ \ (_) | |   ")
+               app.logger.info(" |_____\___/ \___\__,_|\__|_|\___/|_| |_|_|   |_|  \___/ \___\___||___/___/\___/|_|   ")
+               app.logger.info("                                                                                      ")
                 
             while not self.stop_event.is_set():
-                print("listenning to the topic(s)")
-                print(self.consumer.subscription())
-                print("Consumer bootstrap_connected")
-                print(self.consumer.bootstrap_connected())
+                app.logger.info("listenning to the topic(s):")
+                app.logger.info(self.consumer.subscription())
+                app.logger.info("Is Consumer bootstrap_connected:")
+                app.logger.info(self.consumer.bootstrap_connected())
                 
                 for location in self.consumer:
                     location_message = location.value.decode('utf-8')
-                    print('{}'.format(location_message))
                     location_message = json.loads(location_message)
                     insertLocation(location_message)
                     if self.stop_event.is_set():
                         break
             self.consumer.close()
-            print("consumer has closed")
             app.logger.warn("consumer has closed")
         except Exception as e:
-            print("consumer generate Exception")
+            app.logger.error("consumer generate Exception")
             traceback.print_exc()
             app.logger.error("Issue with getting locations from queue" )
             app.logger.error(e)
@@ -156,7 +157,7 @@ class LocationProcessor(multiprocessing.Process):
 
 consumer_process = None
 
-@app.route("/start", methods = ['POST'])
+@app.route("/admin/start", methods = ['POST'])
 def start():
     app.logger.info('Request start consumer')
     global consumer_process
@@ -165,7 +166,7 @@ def start():
             consumer_process = LocationProcessor()
             consumer_process.start()
             consumer_process.join()
-            return jsonify(f"Consumer is started successfully"), 200
+            return jsonify(f"Consumer is finished"), 200
         except Exception as e:
             traceback.print_exc()
             print(e)
@@ -173,7 +174,7 @@ def start():
     return jsonify(f"Unable to create consumer process"), 500
 
 
-@app.route("/status", methods = ['GET'])
+@app.route("/admin/status", methods = ['GET'])
 def status():
     app.logger.info('Request Status consumer')
     global consumer_process
@@ -188,7 +189,7 @@ def status():
     return jsonify("consumer_process is not running"), 200
 
 
-@app.route("/destroy", methods = ['POST'])
+@app.route("/admin/destroy", methods = ['POST'])
 def stop():
     app.logger.info('Request Destroy consumer')
     global consumer_process
@@ -213,7 +214,8 @@ def stop():
 
 
 def run_app():
-    app.logger.setLevel(logging.ERROR)
+    # lowest-severity log message (DEBUG)
+    app.logger.setLevel(logging.DEBUG)
     app.run(host='0.0.0.0', debug=True, port=5000)
 
 
