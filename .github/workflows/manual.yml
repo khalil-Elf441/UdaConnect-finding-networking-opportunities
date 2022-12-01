@@ -5,7 +5,6 @@ name: Udaconnect - Package Services with Docker
 on:
   push:
     branches:
-      - develop
       - master
 #  ./modules/ConnectionService/Dockerfile
 #  ./modules/frontend/Dockerfile
