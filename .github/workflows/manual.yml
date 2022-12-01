@@ -5,7 +5,6 @@ name: Udaconnect - Package Services with Docker
 on:
   push:
     branches:
-      - feature/dockerize-m-services
       - develop
       - master
 #  ./modules/ConnectionService/Dockerfile
