@@ -18,6 +18,8 @@ To do so, ***you will refactor this application into a microservice architecture
 * [Vagrant](https://www.vagrantup.com/) - Tool for managing virtual deployed environments
 * [VirtualBox](https://www.virtualbox.org/) - Hypervisor allowing you to run multiple operating systems
 * [K3s](https://k3s.io/) - Lightweight distribution of K8s to easily develop against a local cluster
+* [gRPC](https://grpc.io/) - is a modern open source high performance Remote Procedure Call (RPC) framework that can run in any environment. It can efficiently connect services in and across data centers with pluggable support for load balancing, tracing, health checking and authentication.
+* [Apache Kafka](https://kafka.apache.org/) - is an open-source distributed event streaming platform used by thousands of companies for high-performance data pipelines, streaming analytics, data integration, and mission-critical applications.
 
 ## Running the app
 The project has been set up such that you should be able to have the project up and running with Kubernetes.
@@ -79,13 +81,43 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
 2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
 3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
-4. `kubectl apply -f deployment/udaconnect-api.yaml` - Set up the service and deployment for the API
-5. `kubectl apply -f deployment/udaconnect-app.yaml` - Set up the service and deployment for the web app
-6. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+4. `kubectl apply -f deployment/udaconnect-zookeeper.yaml` - Set up the service and deployment for Zookeeper
+5. `kubectl apply -f deployment/udaconnect-kafka.yaml` - Set up the service and deployment for the Kafka
+6. `kubectl apply -f deployment/udaconnect-locationservice.yaml` - Set up the service and deployment for the LocationService
+7. `kubectl apply -f deployment/udaconnect-locationprocessor.yaml` - Set up the service and deployment for the LocationProcessor
+8. `kubectl apply -f deployment/udaconnect-personservice.yaml` - Set up the service and deployment for the PersonService
+9. `kubectl apply -f deployment/udaconnect-connectionservice.yaml` - Set up the service and deployment for the ConnectionService 
+10. `kubectl apply -f deployment/udaconnect-frontend.yaml` - Set up the service and deployment for the Frontend web app
+11. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
-Note: The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
+Note: The first time you run this project you will need to:
+
+- :arrow_right: Seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
+
+- :arrow_right: Create topic to Setup the messaging queue:
+Use the command below against the `Kafka` pod
+
+```
+kubectl exec -it <POD_NAME> -- kafka-topics.sh --create --bootstrap-server localhost:9092 \
+    --replication-factor 1 --partitions 1 \
+    --topic locations
+```
+
+- :arrow_right: Run the `gRPC Server` in the `PersonService`:
+Use the command below 
+
+```
+curl localhost:30001/admin/grpcstart
+```
+
+- :arrow_right: Run the `Kafka Consumer` in `LocationProcessor`:
+Use the command below 
+
+```
+curl localhost:30010/admin/start
+```
 
 ### Verifying it Works
 Once the project is up and running, you should be able to see 3 deployments and 3 services in Kubernetes:
