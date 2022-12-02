@@ -175,7 +175,7 @@ curl -X GET localhost:30010/admin/status
 
 Should return message as `consumer is alive on $number`, where the $number is the number the Kafka consumer pid.
 
-If you get any another message error you can destroy the Kafka consumer : `curl -X POST localhost:30010/admin/destroy` and start it again.
+:information_source: If you get any another message error you can destroy the Kafka consumer : `curl -X POST localhost:30010/admin/destroy` and start it again.
 
 These pages should also load on your web browser:
 * `http://localhost:30006/` - Frontend ReactJS Application
