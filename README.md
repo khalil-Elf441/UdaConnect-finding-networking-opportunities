@@ -99,7 +99,7 @@ Manually applying each of the individual `yaml` files is cumbersome but going th
 
 ### Method 2 :  ArgoCD :
 
-install ArgoCD from the guide : [ArgoCD Installation guide](https://argo-cd.readthedocs.io/en/stable/getting_started/)
+Install ArgoCD from the guide : [ArgoCD Installation guide](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
 Create "NodePort" to expose the application to be accessible from the vagrant box to the Host machine
 
