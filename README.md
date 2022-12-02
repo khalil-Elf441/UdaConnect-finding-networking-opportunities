@@ -147,9 +147,13 @@ If you get any another message error you can destroy the Kafka consumer : `curl 
 
 
 These pages should also load on your web browser:
-* `http://localhost:30001/` - OpenAPI Documentation
-* `http://localhost:30001/api/` - Base path for API
-* `http://localhost:30000/` - Frontend ReactJS Application
+* `http://localhost:30006/` - Frontend ReactJS Application
+* `http://localhost:30001/` - OpenAPI Documentation for PersonsService API
+* `http://localhost:30001/api/` - Base path for PersonsService API
+* `http://localhost:30002/` - OpenAPI Documentation for LocationService API
+* `http://localhost:30002/api/` - Base path for LocationService API
+* `http://localhost:30003/` - OpenAPI Documentation for ConnectionService API
+* `http://localhost:30003/api/` - Base path for ConnectionService API
 
 #### Deployment Note
 You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.
