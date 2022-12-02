@@ -161,7 +161,7 @@ Once the project is up and running, you should be able to see 8 deployments and 
 
 - if you are using ArgoCD (**optional**):
 
-You should see in the argoCD web interface as image below :
+You should see in the [argoCD web interface](https://127.0.0.1:30007) as image below :
 
 ![Udaconnect ArgoCD](/docs/argocd_udaconnect.PNG "Udaconnect ArgoCD")
 
