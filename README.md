@@ -78,6 +78,11 @@ Type `exit` to exit the virtual OS and you will find yourself back in your compu
 Afterwards, you can test that `kubectl` works by running a command like `kubectl describe services`. It should not return any errors.
 
 ### Steps
+
+Use one of the two methods below to run udaconnect services 
+
+### Method 1 : Using command line :
+
 1. `kubectl apply -f deployment/db-configmap.yaml` - Set up environment variables for the pods
 2. `kubectl apply -f deployment/db-secret.yaml` - Set up secrets for the pods
 3. `kubectl apply -f deployment/postgres.yaml` - Set up a Postgres database running PostGIS
@@ -92,7 +97,29 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
-:warning: Note: The first time you run this project you will need to:
+### Method 2 :  ArgoCD :
+
+install ArgoCD from the guide : [ArgoCD Installation guide](https://argo-cd.readthedocs.io/en/stable/getting_started/)
+
+Create "NodePort" to expose the application to be accessible from the vagrant box to the Host machine
+
+The YAML manifest for the NodePort service : [argocd-server-nodeport.yaml](https://raw.githubusercontent.com/khalil-Elf441/TechTrends-news-sharing-platform/master/argocd/argocd-server-nodeport.yaml)
+
+```bash
+kubectl apply -f argocd-server-nodeport.yaml
+```
+
+Deploy udaconnect Service using the yml file : [argocd-udaconnect.yaml](https://gist.githubusercontent.com/khalil-Elf441/fd2e80f7926f26d58b6de0bc28e44a82/raw/d8bf1bcd67f686a903fe913adeea28d90e358ccd/argocd-udaconnect.yaml)
+
+```bash
+kubectl apply -f argocd-udaconnect.yaml
+```
+
+
+### Note:
+⚠ You must take this note into consideration regardless of the method you used.
+
+The first time you run this project you will need to:
 
 - :arrow_right: Seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
 
@@ -131,6 +158,11 @@ Once the project is up and running, you should be able to see 8 deployments and 
 - `kubectl get services` - should return as image below :
 
 ![services](/docs/services_screenshot.PNG "Services")
+
+- if you are using ArgoCD (optional):
+You should see in the argoCD web interface as image below :
+
+![Udaconnect ArgoCD](/docs/argocd_udaconnect.PNG "Udaconnect ArgoCD")
 
 - To verify if `Kafka Consumer` is running in `LocationProcessor`:
 
