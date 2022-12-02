@@ -232,3 +232,5 @@ This will enable you to connect to the database at `localhost`. You should then 
 To manually connect to the database, you will need software compatible with PostgreSQL.
 * CLI users will find [psql](http://postgresguide.com/utilities/psql.html) to be the industry standard.
 * GUI users will find [pgAdmin](https://www.pgadmin.org/) to be a popular open-source solution.
+
+:congratulations:
