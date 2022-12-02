@@ -140,7 +140,7 @@ Use the command below or run the HTTP query using ***postman > LP Status***
 curl -X GET localhost:30010/admin/status
 ```
 
-- should return message as `consumer is alive on $number`, where the $number is the number the Kafka consumer pid.
+Should return message as `consumer is alive on $number`, where the $number is the number the Kafka consumer pid.
 
 If you get any another message error you can destroy the Kafka consumer : `curl -X POST localhost:30010/admin/destroy` and start it again.
 
@@ -150,10 +150,12 @@ These pages should also load on your web browser:
 * `http://localhost:30006/` - Frontend ReactJS Application
 * `http://localhost:30001/` - OpenAPI Documentation for PersonsService API
 * `http://localhost:30001/api/` - Base path for PersonsService API
+* `http://localhost:30001/admin/` - Base admin interface for PersonsService
 * `http://localhost:30002/` - OpenAPI Documentation for LocationService API
 * `http://localhost:30002/api/` - Base path for LocationService API
 * `http://localhost:30003/` - OpenAPI Documentation for ConnectionService API
 * `http://localhost:30003/api/` - Base path for ConnectionService API
+* `http://localhost:30010/admin/` - Base admin interface for LocationProcessor
 
 #### Deployment Note
 You may notice the odd port numbers being served to `localhost`. [By default, Kubernetes services are only exposed to one another in an internal network](https://kubernetes.io/docs/concepts/services-networking/service/). This means that `udaconnect-app` and `udaconnect-api` can talk to one another. For us to connect to the cluster as an "outsider", we need to a way to expose these services to `localhost`.
