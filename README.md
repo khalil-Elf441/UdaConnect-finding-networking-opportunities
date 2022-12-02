@@ -144,8 +144,6 @@ Should return message as `consumer is alive on $number`, where the $number is th
 
 If you get any another message error you can destroy the Kafka consumer : `curl -X POST localhost:30010/admin/destroy` and start it again.
 
-
-
 These pages should also load on your web browser:
 * `http://localhost:30006/` - Frontend ReactJS Application
 * `http://localhost:30001/` - OpenAPI Documentation for PersonsService API
@@ -173,7 +171,8 @@ As a reminder, each module should have:
 4. `__init__.py`
 
 ### Docker Images
-`udaconnect-app` and `udaconnect-api` use docker images from `udacity/nd064-udaconnect-app` and `udacity/nd064-udaconnect-api`. To make changes to the application, build your own Docker image and push it to your own DockerHub repository. Replace the existing container registry path with your own.
+
+the built docker images are available in the dockerhub repository : [khalilelf441](https://hub.docker.com/repository/docker/khalilelf441 "khalilelf441 DockerHub") 
 
 ## Configs and Secrets
 In `deployment/db-secret.yaml`, the secret variable is `d293aW1zb3NlY3VyZQ==`. The value is simply encoded and not encrypted -- this is ***not*** secure! Anyone can decode it to see what it is.
