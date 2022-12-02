@@ -41,4 +41,4 @@ service PersonServiceGrpc {
 
 
 To simulate gRPC server, please have a look in the file in the modules folder.
-modules/ConnectionService/app/udaconnect/server_utils.py
+modules/PersonService/app/udaconnect/server_utils.py
