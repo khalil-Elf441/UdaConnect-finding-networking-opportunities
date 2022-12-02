@@ -79,7 +79,7 @@ Afterwards, you can test that `kubectl` works by running a command like `kubectl
 
 ### Steps
 
-Use one of the two methods below to run udaconnect services 
+Use one of the methods below to run udaconnect services 
 
 ### Method 1 : Using command line :
 
@@ -97,7 +97,7 @@ Use one of the two methods below to run udaconnect services
 
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
-### Method 2 :  ArgoCD :
+### Method 2 : Using ArgoCD :
 
 Install ArgoCD from the guide : [ArgoCD Installation guide](https://argo-cd.readthedocs.io/en/stable/getting_started/)
 
