@@ -7,7 +7,8 @@ dist/
 .pytest_cache/
 .vscode/
 udaconnect-env/
-
+old_ConnectionService/
+modules/api/
 
 
 # Byte-compiled / optimized / DLL files
@@ -37,6 +38,8 @@ wheels/
 *.egg
 MANIFEST
 *.pkl
+*.bak
+
 
 # PyInstaller
 #  Usually these files are written by a python script from a template

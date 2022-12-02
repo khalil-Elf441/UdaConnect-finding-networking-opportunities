@@ -1,0 +1,126 @@
+version: "2"
+
+services:
+  zookeeper:
+    image: docker.io/bitnami/zookeeper:3.8
+    ports:
+      - "2181:2181"
+    volumes:
+      - "zookeeper_data:/bitnami"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+  kafka:
+    image: docker.io/bitnami/kafka:3.3
+    ports:
+      - "9092:9092"
+    volumes:
+      - "kafka_data:/bitnami"
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - zookeeper
+    # entrypoint: [ "./opt/bitnami/kafka/bin/kafka-topics.sh", "--create", "--bootstrap-server", "localhost:9092", "--replication-factor", "1", "--partitions", "1", "--topic", "locations"]
+    # ./opt/bitnami/kafka/bin/kafka-topics.sh --create --bootstrap-server  localhost:9092 --replication-factor 1 --partitions 1 --topic locations
+
+  postgres:
+    image: postgis/postgis:latest
+    environment:
+      - POSTGRES_DB=geoconnections
+      - POSTGRES_USER=ct_admin
+      - POSTGRES_PASSWORD=password
+    ports:
+      - "5432:5432"
+
+  locationservice:
+    image: khalilelf441/udaconnect-locationservice:latest
+    ports:
+      - "5002:5002"
+    environment:
+      - DB_USERNAME=ct_admin
+      - DB_PASSWORD=password
+      - DB_NAME=geoconnections
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - TOPIC_NAME=locations
+      - KAFKA_SERVER=kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+
+  connectionservice:
+    image: khalilelf441/udaconnect-connectionservice:latest
+    ports:
+      - "5003:5003"
+    environment:
+      - DB_USERNAME=ct_admin
+      - DB_PASSWORD=password
+      - DB_NAME=geoconnections
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - LOCATION_ENDPOINT_PORT=5002
+      - LOCATION_SERVICE=locationservice
+      - GRPC_SERVER=personservice:5005
+    depends_on:
+      - postgres
+      - personservice
+
+
+
+  locationprocessor:
+    image: khalilelf441/udaconnect-locationprocessor:latest
+    ports:
+      - "5000:5000"
+    environment:
+      - DB_USERNAME=ct_admin
+      - DB_PASSWORD=password
+      - DB_NAME=geoconnections
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - TOPIC_NAME=locations
+      - KAFKA_SERVER=kafka:9092
+    depends_on:
+      - postgres
+      - kafka
+
+  personservice:
+    image: khalilelf441/udaconnect-personservice:latest
+    ports:
+      - "5005:5005"
+      - "5001:5001"
+    environment:
+      - DB_USERNAME=ct_admin
+      - DB_PASSWORD=password
+      - DB_NAME=geoconnections
+      - DB_HOST=postgres
+      - DB_PORT=5432
+    depends_on:
+      - postgres
+
+  frontend:
+    image: khalilelf441/udaconnect-frontend:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - DB_USERNAME=ct_admin
+      - DB_PASSWORD=password
+      - DB_NAME=geoconnections
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - REACT_APP_CONNECTION_SERVICE=connectionservice:5003
+      - REACT_APP_PERSON_SERVICE=personservice:5001
+    depends_on:
+      - postgres
+
+
+
+
+volumes:
+  zookeeper_data:
+    driver: local
+  kafka_data:
+    driver: local
+
+
+
+# docker exec -it ae4a8f23545a ./opt/bitnami/kafka/bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 1 --topic locations

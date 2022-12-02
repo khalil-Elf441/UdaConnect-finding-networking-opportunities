@@ -8,6 +8,13 @@ DB_PORT = os.environ["DB_PORT"]
 DB_NAME = os.environ["DB_NAME"]
 
 
+# DB_USERNAME = "ct_admin"
+# DB_PASSWORD = "password"
+# DB_HOST = "localhost"
+# DB_PORT = "5432"
+# DB_NAME = "geoconnections"
+
+
 class BaseConfig:
     CONFIG_NAME = "base"
     USE_MOCK_EQUIVALENCY = False

@@ -1,0 +1,71 @@
+swagger: '2.0'
+basePath: /
+paths:
+  /api/locations:
+    parameters:
+      - in: query
+        description: Unique ID for a given Location
+        name: location_id
+        type: string
+    post:
+      responses:
+        '200':
+          description: Success
+      operationId: post_location_resource
+      tags:
+        - UdaConnect
+  /api/locations/{location_id}:
+    parameters:
+      - in: path
+        description: Unique ID for a given Location
+        name: location_id
+        required: true
+        type: string
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: get_location_resource_3
+      tags:
+        - UdaConnect
+  /api/locations/{person_id}/daterange:
+    parameters:
+      - in: query
+        description: Proximity to a given user in meters
+        name: distance
+        type: string
+      - in: query
+        description: Upper bound of date range
+        name: end_date
+        type: string
+      - in: query
+        description: Lower bound of date range
+        name: start_date
+        type: string
+      - in: path
+        description: Unique ID for a given Person
+        name: person_id
+        required: true
+        type: string
+    get:
+      responses:
+        '200':
+          description: Success
+      operationId: get_location_resource_4
+      tags:
+        - UdaConnect
+info:
+  title: UdaConnect - LocationService API
+  version: 0.1.0
+produces:
+  - application/json
+consumes:
+  - application/json
+tags:
+  - name: UdaConnect 
+    description: Connections via geolocation.
+responses:
+  ParseError:
+    description: When a mask can't be parsed
+  MaskError:
+    description: When any error occurs on mask
