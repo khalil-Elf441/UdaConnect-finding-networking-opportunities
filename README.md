@@ -159,7 +159,8 @@ Once the project is up and running, you should be able to see 8 deployments and 
 
 ![services](/docs/services_screenshot.PNG "Services")
 
-- if you are using ArgoCD (optional):
+- if you are using ArgoCD (**optional**):
+
 You should see in the argoCD web interface as image below :
 
 ![Udaconnect ArgoCD](/docs/argocd_udaconnect.PNG "Udaconnect ArgoCD")
