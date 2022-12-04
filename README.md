@@ -10,6 +10,11 @@ Management loved the POC so now that there is buy-in, we want to enhance this ap
 
 To do so, ***you will refactor this application into a microservice architecture using message passing techniques that you have learned in this course***. It’s easy to get lost in the countless optimizations and changes that can be made: your priority should be to approach the task as an architect and refactor the application into microservices. File organization, code linting -- these are important but don’t affect the core functionality and can possibly be tagged as TODO’s for now!
 
+### Architecture Design
+
+<img src="/docs/architecture_design.PNG" />
+
+
 ### Technologies
 * [Flask](https://flask.palletsprojects.com/en/1.1.x/) - API webserver
 * [SQLAlchemy](https://www.sqlalchemy.org/) - Database ORM
@@ -149,6 +154,9 @@ curl -X POST localhost:30010/admin/start
 ```
 
 ### Verifying it Works
+
+
+
 Once the project is up and running, you should be able to see 8 deployments and 8 services in Kubernetes:
 
 - `kubectl get pods` - should return as image below :
@@ -176,6 +184,10 @@ curl -X GET localhost:30010/admin/status
 Should return message as `consumer is alive on $number`, where the $number is the number the Kafka consumer pid.
 
 :information_source: If you get any another message error you can destroy the Kafka consumer : `curl -X POST localhost:30010/admin/destroy` and start it again.
+
+-  Web app frontend <br/>
+
+<img src="/docs/frontend-app.PNG" width="609" height="754" />
 
 These pages should also load on your web browser:
 * `http://localhost:30006/` - Frontend ReactJS Application
