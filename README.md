@@ -111,13 +111,13 @@ Create "NodePort" to expose the application to be accessible from the vagrant bo
 The YAML manifest for the NodePort service : [argocd-server-nodeport.yaml](https://raw.githubusercontent.com/khalil-Elf441/TechTrends-news-sharing-platform/master/argocd/argocd-server-nodeport.yaml)
 
 ```bash
-kubectl apply -f argocd-server-nodeport.yaml
+kubectl apply -f https://raw.githubusercontent.com/khalil-Elf441/TechTrends-news-sharing-platform/master/argocd/argocd-server-nodeport.yaml
 ```
 
 Deploy udaconnect Service using the yml file : [argocd-udaconnect.yaml](https://gist.githubusercontent.com/khalil-Elf441/fd2e80f7926f26d58b6de0bc28e44a82/raw/d8bf1bcd67f686a903fe913adeea28d90e358ccd/argocd-udaconnect.yaml)
 
 ```bash
-kubectl apply -f argocd-udaconnect.yaml
+kubectl apply -f https://gist.githubusercontent.com/khalil-Elf441/fd2e80f7926f26d58b6de0bc28e44a82/raw/d8bf1bcd67f686a903fe913adeea28d90e358ccd/argocd-udaconnect.yaml
 ```
 
 
